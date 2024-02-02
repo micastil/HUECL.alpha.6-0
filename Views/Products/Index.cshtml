@@ -1,0 +1,67 @@
+﻿<a asp-action="Create" data-bs-toggle="tooltip" data-bs-title="Crear nuevo producto" class="btn btn-success btn-sm mb-3"><i class="bi bi-plus-square"></i> Nuevo Producto</a>
+
+<table id="productTable" class="table table-hover">
+    <thead>
+        <tr>
+            <th>Codigo Interno</th>
+            <th>Nombre</th>
+            <th>Codigo Fabricante</th>
+            <th>Unidad</th>
+            <th></th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            $('#productTable').DataTable({
+                language: {
+                    info: 'Pagina _PAGE_ de _PAGES_',
+                    infoEmpty: 'No hay informacion disponible',
+                    infoFiltered: '(Filtrado desde _MAX_ items totales)',
+                    lengthMenu: 'Visualizar _MENU_ items por pagina',
+                    zeroRecords: 'No se ha encontrado informacion',
+                    search: "Buscar:",
+                    paginate: {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetProducts", "Products")',
+                    type: 'POST'
+                },
+                columns: [
+                    { data: 'internalCode' },
+                    { data: 'name' },
+                    { data: 'manufacturerCode' },
+                    { 
+                        data: 'unit',
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/Products/Details?internalCode=' + data.internalCode + '"><i class="bi-file-text" style="vertical-align: middle;"></i></a>' + ' | ' + '<a data-bs-toggle="tooltip" data-bs-title="Ventas" href="/Products/Details?internalCode=' + data.internalCode + '"><i class="bi-currency-dollar" style="vertical-align: middle;"></i></a>';
+                        }
+                    }
+                ],
+                drawCallback: function () 
+                {
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+
+        });
+    </script>
+}

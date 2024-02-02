@@ -1,0 +1,232 @@
+﻿@model Sale
+
+@{
+    ViewData["Title"] = "Detalle Venta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="mb-3">
+    <h1 class="display-6">@Model.Customer.Name - @Model.Number</h1>
+</div>
+
+<div class="accordion" id="accordionPanelProductDetails">
+
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelInfoGeneral" aria-expanded="true" aria-controls="panelInfoGeneral">
+                Informacion General
+            </button>
+        </h2>
+        <div id="panelInfoGeneral" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                <div>
+                    <dl class="row">
+                        <div class="col-4">
+                            <dt class="col-sm">
+                                @Html.DisplayNameFor(model => model.Date)
+                            </dt>
+                            <dd class="col-sm">
+                                @Html.DisplayFor(model => model.Date)
+                            </dd>
+                        </div>
+                        <div class="col-4">
+                            <dt class="col-sm">
+                                @Html.DisplayNameFor(model => model.Total)
+                            </dt>
+                            <dd class="col-sm" id="SaleTotal">
+                                @Html.DisplayFor(model => model.Total)
+                            </dd>
+                        </div>
+                        <div class="col-4">
+                            <dt class="col-sm">
+                                @Html.DisplayNameFor(model => model.SaleState)
+                            </dt>
+                            <dd class="col-sm">
+                                @switch (@Model.SaleState)
+                                {
+                                    case SaleState.NoDelivery:
+                                        <p>Sin Entregas</p>
+                                        break;
+                                    default:
+                                        <p>Indeterminado</p>
+                                        break;
+                                }
+                            </dd>
+                        </div>
+                    </dl>
+                    <dl class="row">
+                        <div class="col">
+                            <dt class="col-sm-2">
+                                @Html.DisplayNameFor(model => model.Comment)
+                            </dt>
+                            <dd class="col-sm-10">
+                                @Html.DisplayFor(model => model.Comment)
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                Detalle Items Venta
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                <partial name="_SaleItems" model="Model.SaleItems" />
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
+<div>
+    <a asp-action="Index">Volver a la Lista</a>
+</div>
+<input type="hidden" value="@Model.Id" id="SaleId" />
+
+@section Scripts
+    {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <style>
+        /* Define the CSS class */
+        .delSaleItem {
+            /* Add your custom styling here */
+            border: none;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+
+    <script>
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+
+        $(document).ready(function () 
+        {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            var Total = $('#SaleTotal').text();
+            var TotalNumber = parseFloat(Total.replace(/[^0-9,-]+/g, ''));
+
+            const formatter = new Intl.NumberFormat('es-CL', {
+                style: 'currency',
+                currency: 'CLP',
+            });
+
+            $('#btnSaleItem').on('click', function () {
+
+                if ($('#frmSaleItem').valid()) {
+                    var loadingIndicator = $('#loadingIndicator');
+                    loadingIndicator.show();
+
+                    var customer_Code = $('#CustomerCode').val();
+                    var requested_Delivery = $('#RequestedDelivery').val();
+                    var unitary_Price = $('#UnitaryPrice').val();
+                    var quantity = $('#Quantity').val();
+                    var product_Id = $('#ProductId').val();
+                    var sale_Id = $('#SaleId').val();
+
+                    TotalNumber = TotalNumber + (quantity * unitary_Price);
+
+                    var data = {
+                        CustomerCode: customer_Code,
+                        RequestedDelivery: requested_Delivery,
+                        UnitaryPrice: unitary_Price,
+                        Quantity: quantity,
+                        ProductId: product_Id,
+                        SaleId: sale_Id
+                    };
+
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    data.__RequestVerificationToken = token;
+
+                    $.ajax(
+                        {
+                            url: '/Sales/AddSaleItem',
+                            type: 'POST',
+                            data: data,
+                            success: function (data) {
+                                $('#_SaleItemList').html(data);
+                                $('#modalAddSaleItem').modal('hide');
+
+                                $('#SaleTotal').text(formatter.format(TotalNumber));
+                                $('#SaleTotal').effect('highlight', 2000);
+                            },
+                            error: function () {
+                                console.log('Ha ocurrido un error en la aplicacion');
+                            },
+                            complete: function () {
+                                loadingIndicator.hide();
+                                $('#frmSaleItem').trigger('reset');
+                            }
+                        });
+
+                }
+
+            });
+
+            $(document).on("keypress", "#UnitaryPrice", function (event) {
+                // Custom validation to allow ',' but disallow '.'
+                var charCode = event.which || event.keyCode;
+                if (charCode === 46) {
+                    // Disallow period (.)
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+            var saleItemid;
+
+            $(document).on("click", ".delSaleItem", function () {
+
+                event.preventDefault();
+                saleItemid = $(this).data("id");
+                console.log(saleItemid);
+                $("#confirmationModal").modal("show");
+            });
+
+            // Handle anchor click and set the selectedId variable
+            //$(".delSaleItem").click(function (event) {
+            //    event.preventDefault(); // Prevent the default link behavior
+            //    selectedId = $(this).data("id");
+            //});
+
+            $("#confirmDeleteField").click(function () {
+                // Close the modal
+                $("#confirmationModal").modal("hide");
+
+                $.ajax({
+                    url: "/Sales/DeleteSaleItem",
+                    type: "POST",
+                    data: { Id: saleItemid },
+                    success: function (data) {
+                        if (data.status === "OK") {
+                            alert("Data with ID " + saleItemid + " is OK!");
+                        } else {
+                            alert("Data with ID " + saleItemid + " is not OK!");
+                        }
+                    },
+                    error: function () {
+                        alert("Error occurred while processing data with ID " + id + ".");
+                    }
+                });
+            });
+
+            
+
+        });
+    </script>
+
+}

@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+
+            $('#loginButton').on('click', function () {
+                $('#formLoginModal').valid();
+                
+                if ($('#formLoginModal').valid()){
+                    var email = $('#Input_Email').val();
+                    var password = $('#Input_Password').val();
+                    var rememberMe = $('#Input_RememberMe').is(':checked');
+
+                    var data = {
+                        email: email,
+                        password: password,
+                        rememberMe: rememberMe
+                    };
+
+                    // Get the Antiforgery token value
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+
+                    // Include the Antiforgery token in the data
+                    data.__RequestVerificationToken = token;
+
+                    console.log(data);
+
+                    $.ajax({
+                        url: '/Identity/Account/Login?handler=OnPostAsync',
+                        type: 'post',
+                        data: data,
+                        success: function (response) {
+                            console.log(response);
+
+                            if(response.success){
+                                window.location.href = response.returnUrl;
+                            }
+                            else{
+                                $('#loginErrors').text(response.errorMessage);
+                                $('#loginErrors').show();
+                            }
+
+                            //if (response.returnUrl) {
+                            //    window.location.href = response.returnUrl;
+                            //} else {
+                            //    // Handle login failure
+                            //    // For example, display an error message
+                            //    console.log('Login failed');
+                            //    $('#formLoginModal').valid();
+                            //}
+                        },
+                        error: function () {
+                            // Handle server-side error
+                            console.log('An error occurred');
+                        }
+                    });
+                }
+
+            });
+        });
+    </script>
+}
+

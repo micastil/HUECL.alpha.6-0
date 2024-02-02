@@ -1,0 +1,53 @@
+﻿@using HUECL.alpha._6_0.Areas.Identity.Data;
+@using HUECL.alpha._6_0.Areas.Identity.Pages.Account;
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject ILogger<LoginModel> LoggerManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hola @UserManager.GetUserName(User)!</a>
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="nav-link btn btn-link text-dark">Salir</button>
+            </form>
+        </li>
+    }
+    else
+    {
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" id="login" href="#" data-bs-toggle="modal" data-bs-target="#modalLogIn">Iniciar Sesion</a>
+        </li>
+
+        <li class="nav-item">
+            @*<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Registrar un nuevo usuario</a>*@
+            @*<a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Registrar</a>*@
+        </li>
+
+    }
+</ul>
+
+<div class="modal fade" id="modalLogIn" tabindex="-1" aria-labelledby="modalLogInLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                @await Html.PartialAsync("_LoginModal", new LoginModel(SignInManager, LoggerManager))
+            </div>
+            <div class="modal-footer">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Registrar un nuevo usuario</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

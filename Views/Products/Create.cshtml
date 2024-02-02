@@ -1,0 +1,144 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Crear Producto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Nuevo Producto</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" asp-controller="Products">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="form-label"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="InternalCode" class="form-control" />
+                <label asp-for="InternalCode" class="form-label"></label>
+                <span asp-validation-for="InternalCode" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="ManufacturerCode" class="form-control" />
+                <label asp-for="ManufacturerCode" class="form-label"></label>
+                <span asp-validation-for="ManufacturerCode" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="ProviderId" class="form-control">
+                    @foreach (var provider in ViewBag.SelectListProvider)
+                    {
+                        <option value="@provider.Value">@provider.Text</option>
+                    }
+                </select>
+                <label asp-for="ProviderId" class="form-label"></label>
+                <span asp-validation-for="ProviderId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select id="Category" class="form-control">
+                    @foreach (var category in ViewBag.SelectListCategory)
+                    {
+                        <option value="@category.Value">@category.Text</option>
+                    }
+                </select>
+                <label class="form-label" for="Category">Categoria</label>
+            </div>
+            <div id="loadingIndicator" style="display: none;">
+                @*<img src="~/images/loader.gif" alt="Loading"/>*@
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="SubCategoryId" class="form-control">
+                    <option value="">
+                        Seleccione Categoria
+                    </option>
+                </select>
+                <label asp-for="SubCategoryId" class="form-label"></label>
+                <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="UnitId" class="form-control">
+                    @foreach (var unit in ViewBag.SelectListUnit)
+                    {
+                        <option value="@unit.Value">@unit.Text</option>
+                    }
+                </select>
+                <label asp-for="UnitId" class="form-label"></label>
+                <span asp-validation-for="UnitId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Description" id="Description" class="form-control" style="height: 100px">
+                </textarea>
+                <label asp-for="Description" class="form-label"></label>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="submit" value="Crear Producto" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver a la lista de Productos</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            $('#Category').change(function () {
+
+                var selectedCategory = $(this).val();
+                var loadingIndicator = $('#loadingIndicator');
+                loadingIndicator.show();
+
+                if (selectedCategory != "") 
+                {
+
+                    $.ajax({
+                        url: '/Products/GetSubCategories',
+                        type: 'POST',
+                        data: { IdCategory: selectedCategory },
+                        success: function (response) {
+                            $('#SubCategoryId').empty();
+                            //$('#SubCategoryId').removeAttr('disabled');
+                            $.each(response, function (index, item) {
+                                $('#SubCategoryId').append($('<option></option>').val(item.value).text(item.text));
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        },
+                        complete:function(){
+                            loadingIndicator.hide();
+                        }
+                    });
+                }
+                else 
+                {
+                    //$('#SubCategoryId').attr('disabled', 'disabled');
+                    $('#SubCategoryId').empty();
+                    $('#SubCategoryId').append($('<option></option>').val("").text("Seleccione Categoria"));
+                    loadingIndicator.hide();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,422 @@
+﻿@model IEnumerable<SaleDelivery>
+
+@{
+    ViewData["Title"] = "HUECL - Despachos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.Count() > 0)
+{
+    <div id="deliveryContainer">
+        <partial name="_SaleDeliveryList" model="Model" />
+    </div>
+}
+else
+{
+    <div id="deliveryContainer">
+        <div class="bd-callout bd-callout-warning">
+            <strong>No existen Despachos para esta Venta en la base de datos</strong>
+        </div>
+    </div>
+}
+
+@if (ViewBag.SaleState != SaleState.CompleteDelivery)
+{
+    <button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>
+}
+
+<div id="loadingIndicator" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade" id="modalAddSaleDelivery" tabindex="-1" aria-labelledby="modalAddSaleDeliveryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="saleDeliveryCreateLabel">Agregar Despacho</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <partial name="_SaleDeliveryCreate" model="new SaleDelivery()" />
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddSaleDeliveryItem" tabindex="-1" aria-labelledby="modalAddSaleDeliveryItemLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="saleDeliveryItemCreateLabel">Agregar Item Despacho</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="_ContainerSaleDeliveryItemsCreate">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="confirmationModalLabel">Confirmar Eliminación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Está segur que desea eliminar el Item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteField">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddSaleInvoice" tabindex="-1" aria-labelledby="modalAddSaleInvoiceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalAddSaleInvoiceLabel">Facturar Despacho</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="_ContainerAddSaleInvoice">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalErrorMessage" tabindex="-1" aria-labelledby="modalErrorMessageLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalErrorMessageLabel">Error en la Aplicacion</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="_ContainerErrorMessage">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+
+        var dataIdToDelete;
+
+        function isNumber(value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        function validateQuantity(input) {
+
+            var max = parseInt(input.getAttribute('data-max'));
+
+            var min = parseInt(input.getAttribute('data-min'));
+
+            var value = parseInt(input.value);
+
+            var validationMessage = '';
+
+            if (value > max) {
+                validationMessage = 'Cantidad no puede ser mayor a: ' + max;
+            }
+            if (value < min) {
+                validationMessage = 'Cantidad no puede ser menor a: ' + min;
+            }
+            if (!isNumber(value)) {
+                validationMessage = 'Debe ingresar un numero valido';
+            }
+            // Find the closest container div that wraps the input and related elements
+            var containerDiv = input.closest('div');
+
+            // Find the validation span within the container div
+            var validationSpan = containerDiv.querySelector('span.text-danger');
+
+            if (validationSpan) {
+                validationSpan.textContent = validationMessage;
+
+                // Ensure the validation span visibility matches the validation state
+                validationSpan.style.display = validationMessage ? 'block' : 'none';
+            }
+
+            if (validationMessage) {
+                // Optionally, you can disable the submit button or take other actions
+                document.getElementById('btnAddSaleDeliveryItem').disabled = true;
+            } else {
+                // If there is no validation error, enable the submit button
+                document.getElementById('btnAddSaleDeliveryItem').disabled = false;
+            }
+        }
+
+        $(document).ready(function () {
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            $("#btnSaleDelivery").on('click', function () {
+
+                if ($('#frmSaleDelivery').valid()) {
+                    var loadingIndicator = $('#loadingIndicator');
+                    loadingIndicator.show();
+
+                    var _number = $("#Number").val();
+                    var _deliveryDate = $("#DeliveryDate").val();
+                    var _comment = $("#Comment").val();
+                    var _saleId = $("#SaleId").val();
+
+                    var data =
+                    {
+                        Number: _number,
+                        DeliveryDate: _deliveryDate,
+                        Comment: _comment,
+                        SaleId: _saleId
+                    };
+
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    data.__RequestVerificationToken = token;
+
+                    $.ajax
+                        ({
+                            url: '/Sales/AddSaleDelivery',
+                            type: 'POST',
+                            data: data,
+                            success: function (data) {
+                                $('#deliveryContainer').html(data);
+                                $('#modalAddSaleDelivery').modal('hide');
+                            },
+                            error: function () {
+                                console.log('Ha ocurrido un error en la aplicacion');
+                            },
+                            complete: function () {
+                                loadingIndicator.hide();
+                                $('#frmSaleDelivery').trigger('reset');
+                            }
+                        });
+                }
+            });
+
+            function getAntiForgeryToken() {
+                return $('input[name="__RequestVerificationToken"]').val();
+            }
+
+            $(document).on('click', '#addDeliveryItem', function () {
+                var _saleDeliveryId = $(this).data('id');
+                console.log(_saleDeliveryId);
+
+                var data = {
+                    SaleDeliveryId: _saleDeliveryId
+                };
+
+                $.ajax({
+                    url: '/Sales/AddSaleDeliveryItems',
+                    type: 'GET',
+                    data: data,
+                    success: function (data) {
+                        $("#_ContainerSaleDeliveryItemsCreate").html(data);
+                        $("#modalAddSaleDeliveryItem").modal('show');
+                    },
+                    error: function () {
+                        console.log('ha ocurrido un error en la aplicacion');
+                    }
+                });
+            });
+
+            $(document).on('click', 'a[data-id]', function () {
+                dataIdToDelete = $(this).attr('data-id');
+                $("#confirmationModal").modal('show');
+            });
+
+            $(document).on('click', '#btnAddSaleDeliveryItem', function () {
+
+
+                if ($('#frmAddSaleDeliveryItem').valid()) {
+
+                    var loadingIndicator = $('#loadingIndicator');
+                    loadingIndicator.show();
+
+                    $.ajax
+                        ({
+                            url: '/Sales/AddSaleDeliveryItems',
+                            type: 'POST',
+                            data: $("#frmAddSaleDeliveryItem").serialize(),
+                            success: function (data) {
+
+                                var status = data.status;
+                                var partialView = data.partialView;
+
+                                $("#modalAddSaleDeliveryItem").modal('hide');
+                                $('#deliveryContainer').html(partialView);
+
+                                if (status === 'CompleteDelivery') {
+                                    $("#addDelivery").prop('disabled', true);
+                                    $("#addDeliveryItem").prop('disabled', true);
+                                }
+
+                            },
+                            error: function () {
+                                console.log('ha ocurrido un error en la aplicacion');
+                            },
+                            complete: function () {
+                                loadingIndicator.hide();
+                                $('#frmAddSaleDeliveryItem').trigger('reset');
+                            }
+                        });
+                }
+
+            });
+
+            $(document).on('click', '#addSaleInvoice', function () {
+
+                var _data = $(this).attr('data-id');
+
+                $.ajax
+                    ({
+                        url: '/Sales/AddSaleInvoice',
+                        type: 'GET',
+                        data: { Id: _data },
+                        success: function (data) {
+
+                            var status = data.status;
+                            console.log(status);
+                            var partial = data.partialView;
+                            console.log(partial);
+
+                            if (status === 2) {
+                                $("#_ContainerAddSaleInvoice").html(partial);
+                                $("#modalAddSaleInvoice").modal('show');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            
+                            var _msg = '';
+
+                            if (xhr.status === 500) 
+                            {
+                                _msg = '<div class="bd-callout bd-callout-danger"><strong>' 
+                                    + xhr.responseJSON.message +
+                                '</strong></div>';
+                            } 
+                            else 
+                            {
+                                _msg = '<div class="bd-callout bd-callout-danger"><strong>Error inesperado</strong></div>';
+                            }
+
+                            $('#_ContainerErrorMessage').html(_msg);
+                            $('#modalErrorMessage').modal('show');
+
+                            console.log('ha ocurrido un error en la aplicacion');
+                        },
+                        complete: function () {
+                            
+                        }
+                    });
+            });
+
+            $(document).on('click', '#btnAddSaleInvoice', function () {
+                if ($('#frmAddSaleInvoice').valid()) {
+                    
+                    $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
+
+                    $.ajax
+                        ({
+                            url: '/Sales/AddSaleInvoice',
+                            type: 'POST',
+                            data: $("#frmAddSaleInvoice").serialize(),
+                            success: function (data) {
+
+                                var status = data.status;
+                                var partialView = data.partialView;
+
+                                $("#modalAddSaleInvoice").modal('hide');
+                                $('#deliveryContainer').html(partialView);
+
+                                if (status === 'WithInvoice') {
+                                   $("#addSaleInvoice").prop('disabled', true);
+                                   $("#addDeliveryItem").prop('disabled', true);
+                                }
+
+                            },
+                            error: function (xhr, status, error) {
+
+                                $("#modalAddSaleInvoice").modal('hide');
+
+                                var _msg = '';
+
+                                if (xhr.status === 500) {
+                                    _msg = '<div class="bd-callout bd-callout-danger"><strong>'
+                                        + xhr.responseJSON.message +
+                                        '</strong></div>';
+                                }
+                                else {
+                                    _msg = '<div class="bd-callout bd-callout-danger"><strong>Error inesperado</strong></div>';
+                                }
+
+                                $('#_ContainerErrorMessage').html(_msg);
+                                $('#modalErrorMessage').modal('show');
+
+                                console.log('ha ocurrido un error en la aplicacion');
+                            },
+                            complete: function () {
+
+                                //loadingIndicator.hide();
+                                //$('#frmAddSaleDeliveryItem').trigger('reset');
+                            }
+                        });
+                }
+            });
+
+            $('#confirmDeleteField').on('click', function () {
+
+                $.ajax({
+                    url: '/Sales/DeleteSaleDeliveryItem',
+                    type: 'POST',
+                    data: { Id: dataIdToDelete },
+                    success: function (data) {
+
+                        var status = data.status;
+                        var partialView = data.partialView;
+
+                        $("#confirmationModal").modal('hide');
+                        $('#deliveryContainer').html(partialView);
+
+                        if (status === 'CompleteDelivery') {
+                            $("#addDelivery").prop('disabled', true);
+                        }
+                        else {
+                            $("#addDelivery").prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        console.log('ha ocurrido un error en la aplicacion');
+                    }
+                });
+            });
+
+            $("#confirmationModal").on('hidden.bs.modal', function () {
+                dataIdToDelete = undefined;
+            });
+
+        });
+
+    </script>
+}
+
+

@@ -1,0 +1,14 @@
+﻿@model Microsoft.AspNetCore.Http.IFormFile
+
+<h2>Upload Excel File</h2>
+
+@using (Html.BeginForm("UploadFile", "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="file" accept=".xlsx">
+    <input type="submit" value="Upload">
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <p>@ViewBag.Message</p>
+}

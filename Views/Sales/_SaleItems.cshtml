@@ -1,0 +1,65 @@
+﻿@model IEnumerable<SaleItem>
+
+@if (Model.Count() > 0)
+{
+    <div id="_SaleItemList">
+        <partial name="_SaleItemsList" model="@Model" />
+    </div>
+    <div id="loadingIndicator" style="display: none;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div id="_SaleItemList">
+        <div>
+            <h3 class="display-6">No existen detalles para la venta</h3>
+        </div>
+    </div>
+    <div id="loadingIndicator" style="display: none;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+
+<div>
+    <button class="btn btn-primary btn-sm mb-3" id="addItem" data-bs-toggle="modal" data-bs-target="#modalAddSaleItem">Agregar Item Venta</button>
+</div>
+
+<div class="modal fade" id="modalAddSaleItem" tabindex="-1" aria-labelledby="modalAddSaleItemLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="saleItemCreateLabel">Agregar Item Venta</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <partial name="_SaleItemsCreate" model="new SaleItem()" />
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="confirmationModalLabel">Confirmar Eliminación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Está segur que desea eliminar el Item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteField">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

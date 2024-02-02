@@ -1,0 +1,16 @@
+﻿@model IEnumerable<SaleDelivery>
+
+@foreach (var item in Model)
+{
+
+    @if (item.DeliveryState == DeliveryState.WithInvoice)
+    {
+        <partial name="_SaleDeliveryListWithInvoice" model="item" />
+    }
+    else
+    {
+        <partial name="_SaleDeliveryListWithOutInvoice" model="item" />
+    }
+
+}
+

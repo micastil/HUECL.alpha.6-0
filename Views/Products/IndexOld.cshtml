@@ -1,0 +1,123 @@
+﻿@model PaginationViewModel<Product>
+
+@{
+    ViewData["Title"] = "HUECL - Productos";
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="input-group">
+            <span class="input-group-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+            </span>
+            <input type="text" class="form-control" id="searchInput" placeholder="Buscar Producto">
+            <button type="button" class="btn btn-success" id="searchButton">Buscar</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+        <a asp-action="Create" class="btn btn-primary btn-sm mb-3">Nuevo Producto</a>
+
+@*         <div id="loadingIndicator" style="display: none;">
+            <div class="spinner-grow" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div> *@
+
+        <div id="product-list" data-initial-load="true">
+            
+        </div>
+
+        <div id="pagination">
+            <ul class="pagination">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    @* <li class="page-item @(i == Model.CurrentPage ? "active" : "")"> *@
+                    <li class="page-item">
+                        <a class="page-link" data-page="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        
+        $(document).ready(function () {
+            console.log($('#searchInput').val());
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            var ajaxContent = $('#product-list');
+            var isInitialLoad = ajaxContent.attr('data-initial-load') === 'true';
+
+            function loadProducts(page) {
+
+                $.ajax({
+                    url: '@Url.Action("LoadProducts")',
+                    type: 'GET',
+                    data: { page: page },
+                    success: function (result) {
+                        $('#product-list').html(result);
+                        updateActivePage(page);
+                        sessionStorage.setItem('previousPage', page);
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+
+            $(document).on('click', '#pagination a.page-link', function (e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                loadProducts(page);
+            });
+
+            $('#searchButton').click(function () {
+                var searchTerm = $('#searchInput').val();
+                console.log(searchTerm);
+            });
+
+            function updateActivePage(page) {
+                $('#pagination .page-item').removeClass('active');
+                $('#pagination a[data-page="' + page + '"]').closest('.page-item').addClass('active');
+            }
+
+            var previousPage = sessionStorage.getItem('previousPage');
+
+            if (previousPage) {
+                loadProducts(previousPage);
+            }
+            else 
+            {
+                loadProducts(1);
+                // Investigar sobre como poder cambiar varias veces el attr a un elemento, esto podría ser la solución
+                //$('#product-list').attr('data-initial-load', 'true');
+            }
+
+            // Delete this function
+            // function updateHistory(page) {
+            //     var newUrl = window.location.pathname + '?page=' + page;
+            //     history.pushState({ page: page }, '', newUrl);
+            // }
+
+            // Delete this function
+            // window.onpopstate = function () {
+            //     console.log('popstate');
+            // }
+        });
+
+    </script>
+}
+

@@ -1,0 +1,84 @@
+﻿<a asp-action="Create" class="btn btn-success btn-sm mb-3" data-bs-toggle="tooltip" data-bs-title="Crear nuevo producto">
+    <i class="bi bi-plus-square"></i> Nueva Venta
+</a>
+
+<table id="salesTable" class="table table-hover">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Numero</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            $('#salesTable').DataTable({
+                language: {
+                    info: 'Pagina _PAGE_ de _PAGES_',
+                    infoEmpty: 'No hay informacion disponible',
+                    infoFiltered: '(Filtrado desde _MAX_ items totales)',
+                    lengthMenu: 'Visualizar _MENU_ items por pagina',
+                    zeroRecords: 'No se ha encontrado informacion',
+                    search: "Buscar:",
+                    paginate: {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetSales", "Sales")',
+                    type: 'POST'
+                },
+                columns: [
+                    { data: 'customer' },
+                    {
+                        data: 'number'
+                    },
+                    {
+                        data: 'date',
+                        render: DataTable.render.date()
+                    },
+                    {
+                        data: 'total',
+                        render: DataTable.render.number(null, null, 0, '$')
+                    },
+                    {
+                        data: 'state',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (row.state == "NoDelivery") { return "Sin Despachos"; }
+                            if (row.state == "PartialDelivery") { return "Despacho Parcial"; }
+                            if (row.state == "CompleteDelivery") { return "Despacho Completo"; }
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/Sales/Details?Id=' + data.id + '"><i class="bi-file-text" style="vertical-align: middle;"></i></a> | <a data-bs-toggle="tooltip" data-bs-title="Despachos" href="/Sales/Deliveries?Id=' + data.id + '"><i class="bi bi-truck" style="vertical-align: middle;"></i></a>';
+                        }
+                    }
+                ],
+                order: [[2, 'desc']],
+                drawCallback: function () {
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+
+        });
+    </script>
+}

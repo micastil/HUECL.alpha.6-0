@@ -1,0 +1,39 @@
+﻿@model SaleDelivery
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="frmSaleDelivery" asp-controller="Sales" asp-action="AddSaleDelivery">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Number" class="form-control" />
+                <label asp-for="Number" class="form-label"></label>
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="DeliveryDate" class="form-control" value="@DateTime.Today" />
+                <label asp-for="DeliveryDate" class="form-label"></label>
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Comment" class="form-control" style="height: 100px"></textarea>
+                <label asp-for="Comment" class="form-label"></label>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <button type="button" id="btnSaleDelivery" class="btn btn-primary">Agregar Despacho</button>
+            </div>
+
+            <input type="hidden" value="@ViewBag.SaleId" id="SaleId" />
+        </form>
+    </div>
+</div>
+
+@section Scripts
+    {
+
+
+    }

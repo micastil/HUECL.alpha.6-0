@@ -1,0 +1,60 @@
+﻿@model HUECL.alpha._6_0.Models.Sale
+
+@{
+    ViewData["Title"] = "Crear Venta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Nueva Venta</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" asp-controller="Sales">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Number" class="form-control" />
+                <label asp-for="Number" class="form-label"></label>
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Date" class="form-control" />
+                <label asp-for="Date" class="form-label"></label>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <select asp-for="CustomerId" class ="form-control" asp-items="ViewBag.CustomerId"></select>
+                <label asp-for="CustomerId" class="form-label"></label>
+                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="CurrencyId" class="form-control" asp-items="ViewBag.CurrencyId"></select>
+                <label asp-for="CurrencyId" class="form-label"></label>
+                <span asp-validation-for="CurrencyId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Comment" class="form-control" style="height: 100px"></textarea>
+                <label asp-for="Comment" class="form-label"></label>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="submit" value="Crear Venta" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver a Listado de Ventas</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
