@@ -4,6 +4,7 @@ using HUECL.alpha._6_0.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HUECL.alpha._6_0.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class HueClDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240213222356_24.02.13_Comment_Invoice_Nullable")]
+    partial class _240213_Comment_Invoice_Nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

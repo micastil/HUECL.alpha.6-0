@@ -39,7 +39,7 @@ namespace HUECL.alpha._6_0.Models
         public int Active { get; set; }
 
         [Display(Name = "Comentario")]
-        public string Comment { get; set; } = String.Empty;
+        public string? Comment { get; set; } = String.Empty;
 
         [ForeignKey("FK_SaleInvoice_SaleDelivery_Id")]
         public int SaleDeliveryId { get; set; }

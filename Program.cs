@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options => {
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:Laptop"]);
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:Desktop"]);
 });
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
