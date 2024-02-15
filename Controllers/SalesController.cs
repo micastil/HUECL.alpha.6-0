@@ -458,7 +458,7 @@ namespace HUECL.alpha._6_0.Controllers
                             }
 
                             var partialViewString = await this.RenderViewToStringAsync("_SaleDeliveryList", _resultModel);
-
+                            
                             return new JsonResult(new { status = _resultStatus, partialView = partialViewString });
                         }
                     }

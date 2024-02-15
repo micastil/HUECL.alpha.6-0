@@ -290,7 +290,8 @@ else
 
                 $.ajax
                     ({
-                        url: '/Sales/AddSaleInvoice',
+                        //url: '/Sale/AddSaleInvoice',
+                        url: '/SaleInvoices/AddSaleInvoice',
                         type: 'GET',
                         data: { Id: _data },
                         success: function (data) {
@@ -338,7 +339,7 @@ else
 
                     $.ajax
                         ({
-                            url: '/Sales/AddSaleInvoice',
+                            url: '/SaleInvoices/AddSaleInvoice',
                             type: 'POST',
                             data: $("#frmAddSaleInvoice").serialize(),
                             success: function (data) {
@@ -348,13 +349,6 @@ else
 
                                 $("#modalAddSaleInvoice").modal('hide');
                                 $('#deliveryContainer').html(partialView);
-
-                                //if (status === 'WithInvoice') {
-                                //   $("#addSaleInvoice").prop('disabled', true);
-                                //   $("#addDeliveryItem").prop('disabled', true);
-                                //}
-
-                                //TODO: Disable delete buttons
                             },
                             error: function (xhr, status, error) {
 

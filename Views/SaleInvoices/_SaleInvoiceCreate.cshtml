@@ -1,0 +1,42 @@
+﻿@model SaleInvoice
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="frmAddSaleInvoice" asp-controller="Sales" asp-action="AddSaleDelivery">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Number" class="form-control" />
+                <label asp-for="Number" class="form-label"></label>
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Date" class="form-control" value="@DateTime.Today" />
+                <label asp-for="Date" class="form-label"></label>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="PaymentDate" class="form-control" value="@DateTime.Today" />
+                <label asp-for="PaymentDate" class="form-label"></label>
+                <span asp-validation-for="PaymentDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Comment" class="form-control" style="height: 100px"></textarea>
+                <label asp-for="Comment" class="form-label"></label>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" value="@Model.SaleDeliveryId" asp-for="SaleDeliveryId" />
+
+            <div class="form-floating mb-3">
+                <button type="button" id="btnAddSaleInvoice" class="btn btn-primary">Agregar Factura</button>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial" />
