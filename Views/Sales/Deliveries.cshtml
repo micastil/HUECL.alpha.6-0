@@ -77,7 +77,7 @@ else
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteField">Eliminar</button>
+                <button type="button" class="btn btn-danger" id="confDeleteDeliveryItem">Eliminar</button>
             </div>
         </div>
     </div>
@@ -240,8 +240,8 @@ else
                 });
             });
 
-            $(document).on('click', 'a[data-id]', function () {
-                dataIdToDelete = $(this).attr('data-id');
+            $(document).on('click', 'a[data-idtodelete]', function () {
+                dataIdToDelete = $(this).attr('data-idtodelete');
                 $("#confirmationModal").modal('show');
             });
 
@@ -379,10 +379,10 @@ else
                 }
             });
 
-            $('#confirmDeleteField').on('click', function () {
+            $('#confDeleteDeliveryItem').on('click', function () {
 
                 $.ajax({
-                    url: '/Sales/DeleteSaleDeliveryItem',
+                    url: '/SaleDeliveries/DeleteSaleDeliveryItem',
                     type: 'POST',
                     data: { Id: dataIdToDelete },
                     success: function (data) {

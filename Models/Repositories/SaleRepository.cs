@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Data.Common;
 
 namespace HUECL.alpha._6_0.Models.Repositories
@@ -614,14 +615,21 @@ namespace HUECL.alpha._6_0.Models.Repositories
         {
             try
             {
-                SaleDeliveryItem _itemToDelete = await _appDbContext.SaleDeliveryItems.Where(t => t.Id == Id).FirstOrDefaultAsync();
+                int _deleteResult = 0;
+                SaleDeliveryItem _deliveryItemtoDelete = await _appDbContext.SaleDeliveryItems.Where(t => t.Id == Id).FirstOrDefaultAsync();
 
-                if (_itemToDelete != null) 
+                if (_deliveryItemtoDelete != null) 
                 {
-                    _appDbContext.SaleDeliveryItems.Remove(_itemToDelete);
+                    _appDbContext.SaleDeliveryItems.Remove(_deliveryItemtoDelete);
+                    _deleteResult = await _appDbContext.SaveChangesAsync();
+
+                    if (_deleteResult > 0) 
+                    { 
+
+                    }
                 }
 
-                return await _appDbContext.SaveChangesAsync();
+                return _deleteResult;
             }
             catch (DbException ex)
             {

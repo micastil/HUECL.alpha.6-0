@@ -38,7 +38,7 @@
                 @if(@item.SaleDelivery.DeliveryState != @DeliveryState.WithInvoice)
                 {
                     <td>
-                        <a data-id=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
+                        <a data-idtodelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
                             <i class="bi-trash" style="vertical-align: middle;"></i>
                         </a>
                     </td>

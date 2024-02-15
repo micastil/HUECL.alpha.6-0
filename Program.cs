@@ -23,6 +23,7 @@ builder.Services.AddControllers(
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+builder.Services.AddScoped<ISaleDeliveryRepository, SaleDeliveryRepository>();
 
 builder.Services.AddDistributedMemoryCache();
 
