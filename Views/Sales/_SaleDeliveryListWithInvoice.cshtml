@@ -70,16 +70,6 @@
                 </dd>
             </div>
         </dl>
-
-        @if (Model.Sale.SaleState != SaleState.CompleteDelivery)
-        {
-            <button class="btn btn-secondary btn-sm mb-3" id="addDeliveryItem" data-id="@Model.Id">Agregar Item</button>
-        }
-
-        @if (Model.DeliveryState == DeliveryState.WithItems)
-        {
-            <button class="btn btn-info btn-sm mb-3" id="addSaleInvoice" data-id="@Model.Id">Facturar Despacho</button>
-        }
     </div>
 
 </div>

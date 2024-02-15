@@ -23,8 +23,8 @@
 
     public enum DeliveryVerify 
     {
-        NotFound = 1,
-        Found = 2
+        NotFound = 0,
+        Found = 1
     }
 
     public enum PageCustomSize 

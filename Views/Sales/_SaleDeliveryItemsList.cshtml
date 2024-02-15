@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<SaleDeliveryItem>
+@using HUECL.alpha._6_0.Models
 
 <table class="table table-responsive table-hover table-sm">
     <thead>
@@ -34,12 +35,14 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.SubTotal)
                 </td>
-                
-                <td>
-                    <a data-id=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
-                        <i class="bi-trash" style="vertical-align: middle;"></i>
-                    </a>
-                </td>
+                @if(@item.SaleDelivery.DeliveryState != @DeliveryState.WithInvoice)
+                {
+                    <td>
+                        <a data-id=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
+                            <i class="bi-trash" style="vertical-align: middle;"></i>
+                        </a>
+                    </td>
+                }
             </tr>
         }
     </tbody>
@@ -51,7 +54,7 @@
     {
     <script>
         $(document).ready(function () {
-            
+
         });
     </script>
     }

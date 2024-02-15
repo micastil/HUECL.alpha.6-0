@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SaleDelivery>
+﻿@using HUECL.alpha._6_0.Models;
+@model IEnumerable<SaleDelivery>
 
 @{
     ViewData["Title"] = "HUECL - Despachos";
@@ -299,7 +300,7 @@ else
                             var partial = data.partialView;
                             console.log(partial);
 
-                            if (status === 2) {
+                            if (status === 1) {
                                 $("#_ContainerAddSaleInvoice").html(partial);
                                 $("#modalAddSaleInvoice").modal('show');
                             }
@@ -348,11 +349,12 @@ else
                                 $("#modalAddSaleInvoice").modal('hide');
                                 $('#deliveryContainer').html(partialView);
 
-                                if (status === 'WithInvoice') {
-                                   $("#addSaleInvoice").prop('disabled', true);
-                                   $("#addDeliveryItem").prop('disabled', true);
-                                }
+                                //if (status === 'WithInvoice') {
+                                //   $("#addSaleInvoice").prop('disabled', true);
+                                //   $("#addDeliveryItem").prop('disabled', true);
+                                //}
 
+                                //TODO: Disable delete buttons
                             },
                             error: function (xhr, status, error) {
 
