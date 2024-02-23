@@ -8,9 +8,7 @@
 
 @if (Model.Count() > 0)
 {
-    <div id="deliveryContainer">
-        <partial name="_SaleDeliveryList" model="Model" />
-    </div>
+    <div id="deliveryContainer"><partial name="_SaleDeliveryList" model="Model" /></div>
 }
 else
 {
@@ -21,10 +19,13 @@ else
     </div>
 }
 
-@if (ViewBag.SaleState != SaleState.CompleteDelivery)
-{
-    <button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>
-}
+<div id="btnAddDeliveryContainer">
+    @if (ViewBag.SaleState != SaleState.CompleteDelivery)
+    {
+        <button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>
+    }
+</div>
+
 
 <div id="loadingIndicator" style="display: none;">
     <div class="spinner-border" role="status">
@@ -83,8 +84,28 @@ else
     </div>
 </div>
 
+<div class="modal fade" id="confDeleteDelivery" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="confirmationModalLabel">Confirmar Eliminación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Está seguro que desea eliminar el Despacho?
+                <br />
+                <strong>Se eliminarán además los ítems asociados</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnDeleteDelivery">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalAddSaleInvoice" tabindex="-1" aria-labelledby="modalAddSaleInvoiceLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="modalAddSaleInvoiceLabel">Facturar Despacho</h1>
@@ -121,6 +142,7 @@ else
     <script>
 
         var dataIdToDelete;
+        var deliveryToDelete;
 
         function isNumber(value) {
             return !isNaN(parseFloat(value)) && isFinite(value);
@@ -243,6 +265,12 @@ else
             $(document).on('click', 'a[data-idtodelete]', function () {
                 dataIdToDelete = $(this).attr('data-idtodelete');
                 $("#confirmationModal").modal('show');
+            });
+
+            $(document).on('click', 'button[data-deliverydelete]', function () {
+                console.log();
+                deliveryToDelete = $(this).attr('data-deliverydelete');
+                $("#confDeleteDelivery").modal('show');
             });
 
             $(document).on('click', '#btnAddSaleDeliveryItem', function () {
@@ -406,8 +434,60 @@ else
                 });
             });
 
+            $('#btnDeleteDelivery').on('click', function () {
+                $.ajax({
+                    url: '/SaleDeliveries/DeleteSaleDelivery',
+                    type: 'POST',
+                    data: { Id: deliveryToDelete },
+                    success: function (data) {
+
+                        var status = data.status;
+
+                        var buttonHTML = '<button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>';
+                        var containerHTML = '<div class="bd-callout bd-callout-warning"><strong>No existen Despachos para esta Venta en la base de datos</strong></div>';
+
+                        $('#' + deliveryToDelete).fadeOut(800, function () 
+                        { 
+                            $(this).remove();
+
+                            var remainingElements = $('#deliveryContainer').children().filter(function () {
+                                return this.nodeType === 1;
+                            });
+
+                            if (remainingElements.length === 0) {
+                                $('#deliveryContainer').html(containerHTML);
+                            }
+                        });
+
+                        $("#confDeleteDelivery").modal('hide');
+
+                        if (status === '1') 
+                        {
+                            if ($("#addDelivery").length === 0) 
+                            {
+                                $('#btnAddDeliveryContainer').html(buttonHTML);
+                            }
+
+                            $("#addDelivery").prop('disabled', false);
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('ha ocurrido un error en la aplicacion');
+                        console.log(xhr.status);
+                        console.log(xhr);
+                        console.log(status);
+                        console.log(error);
+                    }
+                });
+            });
+
             $("#confirmationModal").on('hidden.bs.modal', function () {
                 dataIdToDelete = undefined;
+            });
+
+            $("#confDeleteDelivery").on('hidden.bs.modal', function () {
+                deliveryToDelete = undefined;
             });
 
         });

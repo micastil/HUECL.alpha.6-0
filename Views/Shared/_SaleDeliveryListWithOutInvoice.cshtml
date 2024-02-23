@@ -1,10 +1,13 @@
 ﻿@model SaleDelivery
 
-<div class="card mb-3 border-warning">
+<div class="card mb-3 border-warning" id="@Model.Id">
 
-    <div class="card-header text-bg-warning">
-        <h4 class="">@Model.Number | @Model.DeliveryDate.ToShortDateString()</h4>
-    </div>
+    <h4 class="card-header text-bg-warning d-flex justify-content-between align-items-center">
+        @Model.Number | @Model.DeliveryDate.ToShortDateString()
+        <button data-deliverydelete=@Model.Id type ="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar Despacho">
+            <i class="bi-trash" style="vertical-align: middle;"></i>
+        </button>
+    </h4>
 
     <div class="card-body">
 
@@ -21,25 +24,12 @@
         </div>
 
         <dl class="row">
-            <div class="col">
-                <dt class="col-sm-2">
-                    OC Referencia
-                </dt>
-                <dd class="col-sm-10">
-                    <a href="/Sales/Details?Id=@Model.SaleId">
-                        @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.Sale.Number)
-                    </a>
-                </dd>
-            </div>
-        </dl>
-
-        <dl class="row">
             <div class="col-4">
                 <dt class="col-sm">
                     @Html.DisplayNameFor(model => model.TotalNet)
                 </dt>
                 <dd class="col-sm">
-                    @Html.DisplayFor(modelItem =>  Model.TotalNet)
+                    @Html.DisplayFor(modelItem => Model.TotalNet)
                 </dd>
             </div>
             <div class="col-4">
@@ -56,6 +46,19 @@
                 </dt>
                 <dd class="col-sm">
                     @Html.DisplayFor(modelItem => Model.TotalDelivery)
+                </dd>
+            </div>
+        </dl>
+
+        <dl class="row">
+            <div class="col">
+                <dt class="col-sm-2">
+                    OC Referencia
+                </dt>
+                <dd class="col-sm-10">
+                    <a href="/Sales/Details?Id=@Model.SaleId">
+                        @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.Sale.Number)
+                    </a>
                 </dd>
             </div>
         </dl>

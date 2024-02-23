@@ -1,6 +1,7 @@
 ﻿using HUECL.alpha._6_0.Models;
 using HUECL.alpha._6_0.Models.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace HUECL.alpha._6_0.Controllers
 {
@@ -38,13 +39,56 @@ namespace HUECL.alpha._6_0.Controllers
                     if (await _saleDeliveryRepository.DeleteSaleDeliveryItemById(_item.Id) > 0)
                     {
                         var _resultModel = await _saleRepository.GetAllSaleDeliveriesBySaleId(_saleId);
-                        var partialViewString = await this.RenderViewToStringAsync("/Views/Sales/_SaleDeliveryList.cshtml", _resultModel);
+                        var partialViewString = await this.RenderViewToStringAsync("/Views/Shared/_SaleDeliveryList.cshtml", _resultModel);
 
                         return new JsonResult(new { status = "1", partialView = partialViewString });
                     }
                 }
 
                 return StatusCode(500, new { status = "error", message = "Unable to delete item." });
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteSaleDelivery(int Id)
+        {
+            try 
+            {
+                if (await _saleDeliveryRepository.SaleDeliveryExists(Id))
+                {
+                    var _delivery = await _saleDeliveryRepository.GetSaleDeliveryById(Id);
+                    
+                    if (_delivery == null) 
+                    {
+                        return NotFound();
+                    }
+
+                    if (await _saleDeliveryRepository.DeleteSaleDelivery(_delivery) == 0) 
+                    {
+                        return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+                    }
+
+                    string _resultStatus = "0";
+
+                    if (_delivery.Sale.SaleState == SaleState.PartialDelivery || _delivery.Sale.SaleState == SaleState.NoDelivery) 
+                    {
+                        _resultStatus = "1";
+                    }
+
+                    return new JsonResult(new { status = _resultStatus });
+                }
+                
+                return NotFound();
             }
             catch (SaleRepositoryCustomException ex)
             {

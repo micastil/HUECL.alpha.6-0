@@ -214,6 +214,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
                     SaleDeliveries.Where(t => t.SaleId == SaleId && t.Active == Active.Active)
                     .Include(s => s.Sale)
                         .ThenInclude(c => c.Customer)
+                    .Include(x => x.SaleInvoices)
                     .Include(i => i.SaleDeliveryItems)
                         .ThenInclude(i => i.SaleItem)
                         .ThenInclude(p => p.Product)
@@ -264,6 +265,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
 #pragma warning disable CS8603 // Posible tipo de valor devuelto de referencia nulo
                 return await _appDbContext.SaleDeliveries.
                     Include(s => s.Sale).
+                    Include(i => i.SaleInvoices).
                     Include(i => i.Sale.SaleItems).
                         ThenInclude(p => p.Product).
                     Where(t => t.Active == Active.Active && t.Id == SaleDeliveryId).

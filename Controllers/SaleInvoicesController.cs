@@ -79,7 +79,7 @@ namespace HUECL.alpha._6_0.Controllers
                                 _resultStatus = "WithInvoice";
                             }
 
-                            var partialViewString = await this.RenderViewToStringAsync("/Views/Sales/_SaleDeliveryList.cshtml", _resultModel);
+                            var partialViewString = await this.RenderViewToStringAsync("/Views/Shared/_SaleDeliveryList.cshtml", _resultModel);
 
                             return new JsonResult(new { status = _resultStatus, partialView = partialViewString });
                         }
