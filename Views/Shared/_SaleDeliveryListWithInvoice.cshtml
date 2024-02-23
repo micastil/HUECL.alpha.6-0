@@ -57,14 +57,14 @@
                         @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.Sale.Number)
                     </a>
                 </dd>
-                @if (Model.SaleInvoices.Count() > 0)
+                @if (Model.SaleInvoice != null)
                 {
                     <dt class="col-sm">
                         Factura Referencia
                     </dt>
                     <dd class="col-sm">
                         <a href="#">
-                            @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.SaleInvoices.FirstOrDefault().Number)
+                            @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.SaleInvoice.Number)
                         </a>
                     </dd>
                 }

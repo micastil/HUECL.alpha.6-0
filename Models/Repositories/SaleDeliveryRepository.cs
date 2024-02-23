@@ -113,7 +113,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
                     .SaleDeliveries
                     .Include(s => s.Sale)
                     .Include(i => i.SaleDeliveryItems)
-                    .Include(p => p.SaleInvoices)
+                    .Include(p => p.SaleInvoice)
                     .FirstOrDefaultAsync(t => t.Id == Id);
             }
             catch (DbException ex)

@@ -60,8 +60,7 @@ namespace HUECL.alpha._6_0.Models
         [ForeignKey("FK_SaleDelivery_Sale_SaleId")]
         public int SaleId { get; set; }
         public Sale Sale { get; set; } = null!;
-
+        public SaleInvoice SaleInvoice { get; set; } = null!;
         public ICollection<SaleDeliveryItem> SaleDeliveryItems { get; set; } = null!;
-        public ICollection<SaleInvoice> SaleInvoices { get; set; } = null!;
     }
 }
