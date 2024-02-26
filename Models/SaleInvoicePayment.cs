@@ -30,6 +30,6 @@ namespace HUECL.alpha._6_0.Models
 
         [ForeignKey("FK_SaleInvoicePayment_SaleInvoice_Id")]
         public int SaleInvoiceId { get; set; }
-        public SaleInvoice SaleInvoice { get; set; }
+        public SaleInvoice SaleInvoice { get; set; } = null!;
     }
 }

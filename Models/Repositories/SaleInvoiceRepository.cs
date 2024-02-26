@@ -28,8 +28,11 @@ namespace HUECL.alpha._6_0.Models
                 {
                     _delivery.DeliveryState = DeliveryState.WithInvoice;
                     _delivery.ModificationDate = DateTime.Now;
+
                     entity.Active = Active.Active;
                     entity.ModificationDate = DateTime.Now;
+                    entity.InvoiceState = InvoiceState.NoPayment;
+
                     _appDbContext.SaleInvoices.Add(entity);
 
                 }

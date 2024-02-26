@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using DocumentFormat.OpenXml.EMMA;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -37,6 +38,9 @@ namespace HUECL.alpha._6_0.Models
 
         [Required]
         public Active Active { get; set; }
+
+        [Required]
+        public InvoiceState InvoiceState { get; set; }
 
         [Display(Name = "Comentario")]
         public string? Comment { get; set; } = String.Empty;

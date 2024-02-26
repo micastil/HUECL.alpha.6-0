@@ -34,6 +34,12 @@
         High = 15
     }
 
+    public enum InvoiceState 
+    { 
+        NoPayment = 0,
+        Payment = 1
+    }
+
     public static class IVARate
     {
         public static readonly Double CL = 0.19;

@@ -284,39 +284,6 @@ namespace HUECL.alpha._6_0.Models.Repositories
             }
         }
 
-        //public async Task<int> AddSaleDeliveryItems(ICollection<SaleDeliveryItem> _list)
-        //{
-        //    try 
-        //    {
-        //        foreach(var item in _list) 
-        //        {
-        //            item.Active = Active.Active;
-        //            item.CreationDate = DateTime.Now;
-
-        //            SaleDelivery _saleDelivery = await GetSaleDeliveryById(item.SaleDeliveryId);
-        //            SaleItem _saleItem = await GetSaleItemById(item.SaleItemId);
-
-        //            _saleDelivery.TotalNet += (_saleItem.UnitaryPrice * item.Quantity);
-        //            _saleDelivery.TotalTax = (int)(_saleDelivery.TotalNet * (Decimal)IVARate.CL);
-        //            _saleDelivery.TotalDelivery = (int)(_saleDelivery.TotalNet + _saleDelivery.TotalTax);
-
-        //            _appDbContext.SaleDeliveryItems.Add(item);
-        //        }
-
-        //        return await _appDbContext.SaveChangesAsync();
-        //    }
-        //    catch (DbException ex)
-        //    {
-        //        _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
-        //        throw new SaleRepositoryCustomException(ex.Message, ex);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
-        //        throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
-        //    }
-        //}
-
         public async Task<int> AddSaleDeliveryItems(ICollection<SaleDeliveryItemViewModel> _list)
         {
             try
@@ -651,6 +618,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
             {
                 invoice.Active = Active.Active;
                 invoice.ModificationDate = DateTime.Now;
+                invoice.InvoiceState = InvoiceState.NoPayment;
                 _appDbContext.SaleInvoices.Add(invoice);
 
                 SaleDelivery _delivery = await GetSaleDeliveryById(invoice.SaleDeliveryId);
