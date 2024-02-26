@@ -1,5 +1,7 @@
 ﻿using HUECL.alpha._6_0.Models;
+using HUECL.alpha._6_0.Models.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace HUECL.alpha._6_0.Controllers
 {
@@ -8,13 +10,40 @@ namespace HUECL.alpha._6_0.Controllers
 
         private readonly AppDbContext _appDbcontext;
         private readonly ISaleRepository _saleRepository;
+        private readonly ISaleInvoiceRepository _saleInvoiceRepository;
         private readonly ILogger<SalesController> _logger;
 
-        public SaleInvoicesController (AppDbContext appDbcontext, ISaleRepository saleRepository, ILogger<SalesController> logger)
+        public SaleInvoicesController (AppDbContext appDbcontext, ILogger<SalesController> logger, ISaleRepository saleRepository, ISaleInvoiceRepository saleInvoiceRepository )
         {
             _appDbcontext = appDbcontext;
-            _saleRepository = saleRepository;
             _logger = logger;
+
+            _saleRepository = saleRepository;
+            _saleInvoiceRepository = saleInvoiceRepository;
+        }
+
+        public async Task<IActionResult> Detail(int Id)
+        {
+            try 
+            {
+                if (await _saleInvoiceRepository.SaleInvoiceExistis(Id)) 
+                {
+                    var _result = await _saleInvoiceRepository.GetSaleInvoiceById(Id);
+                    if (_result == null) { return NotFound(); }
+                    return PartialView("_SaleInvoiceDetail", _result);
+                }
+                return NotFound();
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
         }
 
         [HttpGet]

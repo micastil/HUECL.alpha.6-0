@@ -36,7 +36,7 @@ namespace HUECL.alpha._6_0.Models
         public DateTime PaymentDate { get; set; } = DateTime.Now;
 
         [Required]
-        public int Active { get; set; }
+        public Active Active { get; set; }
 
         [Display(Name = "Comentario")]
         public string? Comment { get; set; } = String.Empty;

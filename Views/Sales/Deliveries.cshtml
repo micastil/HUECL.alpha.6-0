@@ -133,6 +133,22 @@ else
     </div>
 </div>
 
+<div class="modal fade" id="modalSaleInvoice" tabindex="-1" aria-labelledby="modalSaleInvoiceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalSaleInvoiceLabel">Detalle Factura</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="_containerSaleInvoice">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts
     {
 
@@ -268,14 +284,11 @@ else
             });
 
             $(document).on('click', 'button[data-deliverydelete]', function () {
-                console.log();
                 deliveryToDelete = $(this).attr('data-deliverydelete');
                 $("#confDeleteDelivery").modal('show');
             });
 
             $(document).on('click', '#btnAddSaleDeliveryItem', function () {
-
-
                 if ($('#frmAddSaleDeliveryItem').valid()) {
 
                     var loadingIndicator = $('#loadingIndicator');
@@ -318,16 +331,13 @@ else
 
                 $.ajax
                     ({
-                        //url: '/Sale/AddSaleInvoice',
                         url: '/SaleInvoices/AddSaleInvoice',
                         type: 'GET',
                         data: { Id: _data },
                         success: function (data) {
 
                             var status = data.status;
-                            console.log(status);
                             var partial = data.partialView;
-                            console.log(partial);
 
                             if (status === 1) {
                                 $("#_ContainerAddSaleInvoice").html(partial);
@@ -335,24 +345,16 @@ else
                             }
                         },
                         error: function (xhr, status, error) {
-                            
+
                             var _msg = '';
 
-                            if (xhr.status === 500) 
-                            {
-                                _msg = '<div class="bd-callout bd-callout-danger"><strong>' 
-                                    + xhr.responseJSON.message +
+                            _msg = '<div class="bd-callout bd-callout-danger"><strong>'
+                                + xhr.status + ' : ' + xhr.statusText +
                                 '</strong></div>';
-                            } 
-                            else 
-                            {
-                                _msg = '<div class="bd-callout bd-callout-danger"><strong>Error inesperado</strong></div>';
-                            }
 
                             $('#_ContainerErrorMessage').html(_msg);
                             $('#modalErrorMessage').modal('show');
 
-                            console.log('ha ocurrido un error en la aplicacion');
                         },
                         complete: function () {
                             
@@ -399,12 +401,47 @@ else
                                 console.log('ha ocurrido un error en la aplicacion');
                             },
                             complete: function () {
-
-                                //loadingIndicator.hide();
-                                //$('#frmAddSaleDeliveryItem').trigger('reset');
                             }
                         });
                 }
+            });
+
+            $(document).on('click', 'a[data-invoiceId]', function () {
+
+                var _data = $(this).attr('data-invoiceId');
+
+                $.ajax
+                    ({
+                        url: '/SaleInvoices/Detail',
+                        type: 'GET',
+                        data: { Id: _data },
+                        success: function (data) {
+                            $('#_containerSaleInvoice').html(data);
+                            $("#modalSaleInvoice").modal('show');
+                        },
+                        error: function (xhr, status, error) {
+
+                            $("#modalAddSaleInvoice").modal('hide');
+
+                            var _msg = '';
+
+                            if (xhr.status === 500) {
+                                _msg = '<div class="bd-callout bd-callout-danger"><strong>'
+                                    + xhr.responseJSON.message +
+                                    '</strong></div>';
+                            }
+                            else {
+                                _msg = '<div class="bd-callout bd-callout-danger"><strong>Error inesperado</strong></div>';
+                            }
+
+                            $('#_ContainerErrorMessage').html(_msg);
+                            $('#modalErrorMessage').modal('show');
+
+                            console.log('ha ocurrido un error en la aplicacion');
+                        },
+                        complete: function () {
+                        }
+                    });
             });
 
             $('#confDeleteDeliveryItem').on('click', function () {
@@ -473,11 +510,16 @@ else
 
                     },
                     error: function (xhr, status, error) {
-                        console.log('ha ocurrido un error en la aplicacion');
-                        console.log(xhr.status);
-                        console.log(xhr);
-                        console.log(status);
-                        console.log(error);
+                        $("#confDeleteDelivery").modal('hide');
+
+                        var _msg = '';
+
+                        _msg = '<div class="bd-callout bd-callout-danger"><strong>'
+                            + xhr.status + ' : ' + xhr.statusText +
+                            '</strong></div>';
+
+                        $('#_ContainerErrorMessage').html(_msg);
+                        $('#modalErrorMessage').modal('show');
                     }
                 });
             });

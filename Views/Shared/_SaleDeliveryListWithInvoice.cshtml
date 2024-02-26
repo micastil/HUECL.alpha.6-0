@@ -63,7 +63,7 @@
                         Factura Referencia
                     </dt>
                     <dd class="col-sm">
-                        <a href="#">
+                        <a href="#" data-invoiceId="@Model.SaleInvoice.Id">
                             @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.SaleInvoice.Number)
                         </a>
                     </dd>

@@ -649,7 +649,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
         {
             try 
             {
-                invoice.Active = 1;
+                invoice.Active = Active.Active;
                 invoice.ModificationDate = DateTime.Now;
                 _appDbContext.SaleInvoices.Add(invoice);
 
