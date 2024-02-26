@@ -35,7 +35,5 @@
         Task<SaleDeliveryItem> GetSaleDeliveryItemById(int SaleDeliveryItemId);
         Task<int> DeleteSaleDeliveryItemById(int Id);
 
-        /**************************   SALE_INVOICE *******************************************************/
-        Task<int> AddSaleInvoice(SaleInvoice entity);
     }
 }

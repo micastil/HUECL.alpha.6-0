@@ -114,7 +114,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
                     .Include(s => s.Sale)
                     .Include(i => i.SaleDeliveryItems)
                     .Include(p => p.SaleInvoice)
-                    .FirstOrDefaultAsync(t => t.Id == Id);
+                    .FirstOrDefaultAsync(t => t.Id == Id && t.Active == Active.Active);
             }
             catch (DbException ex)
             {
@@ -170,6 +170,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
             {
                 return await _appDbContext.
                     SaleDeliveries.Where(t => t.SaleId == SaleId && t.Active == Active.Active)
+                    .Include(j => j.SaleInvoice)
                     .Include(s => s.Sale)
                         .ThenInclude(c => c.Customer)
                     .Include(i => i.SaleDeliveryItems)

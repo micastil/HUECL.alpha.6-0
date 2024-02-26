@@ -612,31 +612,5 @@ namespace HUECL.alpha._6_0.Models.Repositories
             }
         }
 
-        public async Task<int> AddSaleInvoice(SaleInvoice invoice) 
-        {
-            try 
-            {
-                invoice.Active = Active.Active;
-                invoice.ModificationDate = DateTime.Now;
-                invoice.InvoiceState = InvoiceState.NoPayment;
-                _appDbContext.SaleInvoices.Add(invoice);
-
-                SaleDelivery _delivery = await GetSaleDeliveryById(invoice.SaleDeliveryId);
-                _delivery.DeliveryState = DeliveryState.WithInvoice;
-                _delivery.ModificationDate = DateTime.Now;
-
-                return await _appDbContext.SaveChangesAsync();
-            }
-            catch (DbException ex)
-            {
-                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
-                throw new SaleRepositoryCustomException(ex.Message, ex);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
-                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
-            }
-        }
     }
 }
