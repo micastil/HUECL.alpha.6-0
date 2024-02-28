@@ -139,5 +139,24 @@ namespace HUECL.alpha._6_0.Controllers
                 return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSaleInvoicePayments(int Id)
+        {
+            try 
+            {
+                return NotFound();
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
     }
 }

@@ -5,14 +5,24 @@ using HUECL.alpha._6_0.Areas.Identity.Data;
 using HUECL.alpha._6_0.Models.Repositories;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+var conStrBuilder = new SqlConnectionStringBuilder(
+        builder.Configuration.GetConnectionString("External"));
+conStrBuilder.Password = builder.Configuration["ExternalPassword"];
+var connection = conStrBuilder.ConnectionString;
+
+//builder.Services.AddDbContext<AppDbContext>(options => {
+//    options.UseSqlServer(builder.Configuration["ConnectionStrings:External"]);
+//});
+
 builder.Services.AddDbContext<AppDbContext>(options => {
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:External"]);
+    options.UseSqlServer(connection);
 });
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

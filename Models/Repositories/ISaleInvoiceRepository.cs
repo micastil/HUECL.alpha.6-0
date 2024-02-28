@@ -3,7 +3,8 @@
     public interface ISaleInvoiceRepository
     {
         Task<int> AddSaleInvoice(SaleInvoice entity);
-        Task<bool> SaleInvoiceExistis(int Id);
+        Task<SaleInvoicePayment?> GetAllSaleInvoicePayment(int Id);
         Task<SaleInvoice?> GetSaleInvoiceById(int Id);
+        Task<bool> SaleInvoiceExistis(int Id);
     }
 }

@@ -51,6 +51,11 @@ namespace HUECL.alpha._6_0.Models
             }
         }
 
+        public Task<SaleInvoicePayment?> GetAllSaleInvoicePayment(int Id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<SaleInvoice?> GetSaleInvoiceById(int Id)
         {
             try

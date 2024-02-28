@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>HUECL.alpha._6_0</RootNamespace>
+    <UserSecretsId>e1da9131-9304-483f-8d07-57f4fa42e2c9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
