@@ -134,7 +134,7 @@ else
 </div>
 
 <div class="modal fade" id="modalSaleInvoice" tabindex="-1" aria-labelledby="modalSaleInvoiceLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="modalSaleInvoiceLabel">Detalle Factura</h1>
@@ -144,6 +144,19 @@ else
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddSaleInvoicePayment" tabindex="-1" aria-labelledby="modalAddSaleInvoicePaymentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalAddSaleInvoicePaymentLabel">Agregar Pago Factura</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="_containerAddSaleInvoicePayment">
             </div>
         </div>
     </div>
@@ -239,6 +252,8 @@ else
                             data: data,
                             success: function (data) {
                                 $('#deliveryContainer').html(data);
+                                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                                 $('#modalAddSaleDelivery').modal('hide');
                             },
                             error: function () {
@@ -270,6 +285,8 @@ else
                     data: data,
                     success: function (data) {
                         $("#_ContainerSaleDeliveryItemsCreate").html(data);
+                        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                         $("#modalAddSaleDeliveryItem").modal('show');
                     },
                     error: function () {
@@ -306,6 +323,8 @@ else
 
                                 $("#modalAddSaleDeliveryItem").modal('hide');
                                 $('#deliveryContainer').html(partialView);
+                                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
                                 if (status === 'CompleteDelivery') {
                                     $("#addDelivery").prop('disabled', true);
@@ -341,6 +360,8 @@ else
 
                             if (status === 1) {
                                 $("#_ContainerAddSaleInvoice").html(partial);
+                                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                                 $("#modalAddSaleInvoice").modal('show');
                             }
                         },
@@ -379,6 +400,8 @@ else
 
                                 $("#modalAddSaleInvoice").modal('hide');
                                 $('#deliveryContainer').html(partialView);
+                                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                             },
                             error: function (xhr, status, error) {
 
@@ -417,6 +440,8 @@ else
                         data: { Id: _data },
                         success: function (data) {
                             $('#_containerSaleInvoice').html(data);
+                            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                             $("#modalSaleInvoice").modal('show');
                         },
                         error: function (xhr, status, error) {
@@ -457,6 +482,8 @@ else
 
                         $("#confirmationModal").modal('hide');
                         $('#deliveryContainer').html(partialView);
+                        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
                         if (status === 'CompleteDelivery') {
                             $("#addDelivery").prop('disabled', true);
@@ -493,6 +520,8 @@ else
 
                             if (remainingElements.length === 0) {
                                 $('#deliveryContainer').html(containerHTML);
+                                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                             }
                         });
 

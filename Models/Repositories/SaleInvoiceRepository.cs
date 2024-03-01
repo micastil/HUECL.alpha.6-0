@@ -60,7 +60,10 @@ namespace HUECL.alpha._6_0.Models
         {
             try
             {
-                return await _appDbContext.SaleInvoices.FirstOrDefaultAsync(t => t.Id == Id && t.Active == Active.Active);
+                return await _appDbContext.
+                    SaleInvoices.
+                    Include(i => i.SaleInvoicePayments).
+                    FirstOrDefaultAsync(t => t.Id == Id && t.Active == Active.Active);
 
             }
             catch (DbException ex)
