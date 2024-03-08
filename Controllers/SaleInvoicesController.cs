@@ -28,29 +28,7 @@ namespace HUECL.alpha._6_0.Controllers
             _saleInvoiceRepository = saleInvoiceRepository;
         }
 
-        public async Task<IActionResult> Detail(int Id)
-        {
-            try
-            {
-                if (await _saleInvoiceRepository.SaleInvoiceExistis(Id))
-                {
-                    var _result = await _saleInvoiceRepository.GetSaleInvoiceById(Id);
-                    if (_result == null) { return NotFound(); }
-                    return PartialView("_SaleInvoiceDetail", _result);
-                }
-                return NotFound();
-            }
-            catch (SaleRepositoryCustomException ex)
-            {
-                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
-                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
-                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
-            }
-        }
+        
 
         [HttpGet]
         public async Task<IActionResult> AddSaleInvoice(int Id)
@@ -127,6 +105,60 @@ namespace HUECL.alpha._6_0.Controllers
 
                 return StatusCode(500, new { message = "Ocurrio un error al iingresar los datos" });
 
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeletePayment(int Id)
+        {
+            try
+            {
+                //var _payment = _saleInvoiceRepository.GetSaleInvoicePaymentById(Id);
+
+                //if (_payment != null) 
+                //{
+                //    if (await _saleInvoiceRepository.DeleteInvoicePaymet(Id) > 0)
+                //    {
+                //        return Ok();
+                //    }
+                //}
+                //return NotFound(new { item = Id, msg = "No se encuentra el Pago en la Base de Datos" });
+                return Ok();
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int Id)
+        {
+            try
+            {
+                if (await _saleInvoiceRepository.SaleInvoiceExistis(Id))
+                {
+                    var _result = await _saleInvoiceRepository.GetSaleInvoiceById(Id);
+                    if (_result == null) { return NotFound(); }
+                    return PartialView("_SaleInvoiceDetail", _result);
+                }
+                return NotFound();
             }
             catch (SaleRepositoryCustomException ex)
             {

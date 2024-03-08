@@ -1,4 +1,5 @@
-﻿using HUECL.alpha._6_0.Models.Repositories;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using HUECL.alpha._6_0.Models.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -31,13 +32,43 @@ namespace HUECL.alpha._6_0.Models
 
                     entity.Active = Active.Active;
                     entity.ModificationDate = DateTime.Now;
-                    entity.InvoiceState = InvoiceState.NoPayment;
+                    entity.InvoiceState = InvoiceState.PaymentPending;
 
                     _appDbContext.SaleInvoices.Add(entity);
 
                 }
 
                 return await _appDbContext.SaveChangesAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
+        public async Task<int> DeleteInvoicePaymet(int id)
+        {
+            try
+            {
+                var _item = await _appDbContext.
+                    SaleInvoicePayments.
+                    Include(t => t.SaleInvoice).
+                    FirstOrDefaultAsync(i => i.Id == id && i.Active == Active.Active);
+
+                if (_item != null) 
+                {
+                    _item.SaleInvoice.InvoiceState = InvoiceState.PaymentPending;
+                    _appDbContext.SaleInvoicePayments.Remove(_item);
+
+                    return await _appDbContext.SaveChangesAsync();
+                }
+                return 0;
             }
             catch (DbException ex)
             {
@@ -65,6 +96,27 @@ namespace HUECL.alpha._6_0.Models
                     Include(i => i.SaleInvoicePayments).
                     FirstOrDefaultAsync(t => t.Id == Id && t.Active == Active.Active);
 
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
+        public async Task<SaleInvoicePayment?> GetSaleInvoicePaymentById(int Id)
+        {
+            try
+            {
+                return await _appDbContext.
+                    SaleInvoicePayments.
+                    Include(t => t.SaleInvoice).
+                    FirstOrDefaultAsync(i => i.Id == Id && i.Active == Active.Active);
             }
             catch (DbException ex)
             {

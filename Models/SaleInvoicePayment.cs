@@ -10,7 +10,7 @@ namespace HUECL.alpha._6_0.Models
         public int Id { get; set; }
 
         [Required]
-        public int Active { get; set; }
+        public Active Active { get; set; }
 
         [Required]
         [DataType(DataType.Date)]

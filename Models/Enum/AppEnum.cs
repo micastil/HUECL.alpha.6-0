@@ -36,8 +36,8 @@
 
     public enum InvoiceState 
     { 
-        NoPayment = 0,
-        Payment = 1
+        PaymentPending = 0,
+        PaymentComplete = 1
     }
 
     public static class IVARate
