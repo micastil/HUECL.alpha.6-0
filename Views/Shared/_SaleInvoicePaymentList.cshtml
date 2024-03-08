@@ -15,7 +15,8 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+
+    <tbody style="vertical-align: middle;">
         @foreach (var item in Model)
         {
             <tr>
@@ -29,9 +30,12 @@
                     @Html.DisplayFor(modelItem => item.Comment)
                 </td>
                 <td>
-                    <a data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
+                    @* <a data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
                         <i class="bi-trash" style="vertical-align: middle;"></i>
-                    </a>
+                    </a> *@
+                    <button class="btn btn-link" type="button" data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" >
+                        <i class="bi-trash"></i>
+                    </button>
                 </td>
             </tr>
         }

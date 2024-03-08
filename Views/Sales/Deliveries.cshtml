@@ -485,7 +485,7 @@ else
                     });
             });
 
-            $(document).on('click', 'a[data-paymentdelete]', function () {
+            $(document).on('click', 'button[data-paymentdelete]', function () {
                 paymentToDelete = $(this).attr('data-paymentdelete');
                 rowrowToDelete = $(this).closest('tr');
 
