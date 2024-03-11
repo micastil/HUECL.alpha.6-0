@@ -30,9 +30,6 @@
                     @Html.DisplayFor(modelItem => item.Comment)
                 </td>
                 <td>
-                    @* <a data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
-                        <i class="bi-trash" style="vertical-align: middle;"></i>
-                    </a> *@
                     <button class="btn btn-link" type="button" data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" >
                         <i class="bi-trash"></i>
                     </button>
@@ -41,5 +38,11 @@
         }
     </tbody>
 </table>
+
+<div id="loadingPayment" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 

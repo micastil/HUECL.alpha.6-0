@@ -123,17 +123,17 @@ namespace HUECL.alpha._6_0.Controllers
         {
             try
             {
-                //var _payment = _saleInvoiceRepository.GetSaleInvoicePaymentById(Id);
+                var _payment = await _saleInvoiceRepository.GetSaleInvoicePaymentById(Id);
 
-                //if (_payment != null) 
-                //{
-                //    if (await _saleInvoiceRepository.DeleteInvoicePaymet(Id) > 0)
-                //    {
-                //        return Ok();
-                //    }
-                //}
-                //return NotFound(new { item = Id, msg = "No se encuentra el Pago en la Base de Datos" });
-                return Ok();
+                if (_payment != null)
+                {
+                    
+                    if (await _saleInvoiceRepository.DeleteInvoicePaymet(Id) > 0)
+                    {
+                        return Ok();
+                    }
+                }
+                return NotFound(new { item = Id, msg = "No se encuentra el Pago en la Base de Datos" });
             }
             catch (SaleRepositoryCustomException ex)
             {
