@@ -1,6 +1,6 @@
 ﻿@model SaleInvoice 
 
-<div id="deliveryItemsContainer">
+<div id="invoicePaymentsContainer">
     @if (Model.SaleInvoicePayments != null && Model.SaleInvoicePayments.Count() > 0)
     {
         <partial name="_SaleInvoicePaymentList" model="Model.SaleInvoicePayments" />

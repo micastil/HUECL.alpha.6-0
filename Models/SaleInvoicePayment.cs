@@ -23,10 +23,10 @@ namespace HUECL.alpha._6_0.Models
 
         [Required(ErrorMessage = "Debe ingrear un Total")]
         [Column(TypeName = "decimal(18,4)")]
-        [Display(Name = "Total Pago")]
         [Range(1, int.MaxValue, ErrorMessage = "Debe ingresar valores mayores que Cero")]
+        [Display(Name = "Total Pago")]
         [DataType(DataType.Currency)]
-        public decimal TotalPayment { get; set; }
+        public Decimal TotalPayment { get; set; }
 
         [Display(Name = "Comentario")]
         public string? Comment { get; set; } = string.Empty;

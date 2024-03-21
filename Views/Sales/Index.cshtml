@@ -2,6 +2,23 @@
     <i class="bi bi-plus-square"></i> Nueva Venta
 </a>
 
+
+<div class="row">
+    <div class="dropdown">
+        <button class="btn btn-primary btn-sm mb-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Seleccionar Año
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">2020</a></li>
+            <li><a class="dropdown-item" href="#">2021</a></li>
+            <li><a class="dropdown-item" href="#">2022</a></li>
+            <li><a class="dropdown-item" href="#">2023</a></li>
+            <li><a class="dropdown-item" href="#">2024</a></li>
+        </ul>
+    </div>
+</div>
+
+
 <table id="salesTable" class="table table-hover">
     <thead>
         <tr>
@@ -42,6 +59,10 @@
                 ajax: {
                     url: '@Url.Action("GetSales", "Sales")',
                     type: 'POST'
+                    // data: function (d) 
+                    // {
+                    //     d.year = '2022';
+                    // }
                 },
                 columns: [
                     { data: 'customer' },

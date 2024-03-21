@@ -61,9 +61,10 @@ namespace HUECL.alpha._6_0.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSaleInvoicePayment(SaleInvoicePayment saleInvoicePayment)
         {
-            //TODO: Falta validar que la suma de pagos no sea mayor al Total Invoice
             try 
             {
+                decimal _allPayments = 0;
+
                 if (saleInvoicePayment.TotalPayment == 0) 
                 {
                     return BadRequest(new { msg = "Debe ingresar un valor mayor a 0. Intente nuevamente" });
@@ -74,6 +75,26 @@ namespace HUECL.alpha._6_0.Controllers
                 if (_invoice == null) 
                 {
                     return BadRequest(new { msg = "No existe la factura en sistema. Intente nuevamente" });
+                }
+
+                var _payments = await _saleInvoiceRepository.GetAllSaleInvoicePayment(_invoice.Id);
+
+                if (_payments == null) 
+                {
+                    _allPayments = saleInvoicePayment.TotalPayment;
+                }
+                else
+                {
+                    foreach (var item in _payments)
+                    {
+                        _allPayments += item.TotalPayment;
+                    }
+                    _allPayments += saleInvoicePayment.TotalPayment;
+                }
+
+                if (_allPayments > _invoice.SaleDelivery.TotalDelivery) 
+                {
+                    return BadRequest(new { msg = "El Pago Total de Facturas no puede ser mayor al Total del Despacho." });
                 }
 
                 if(await _saleInvoiceRepository.AddSaleInvoicePayment(saleInvoicePayment) == 0) 

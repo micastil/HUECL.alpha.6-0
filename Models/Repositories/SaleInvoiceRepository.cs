@@ -52,20 +52,20 @@ namespace HUECL.alpha._6_0.Models
             }
         }
 
-        public async Task<int> AddSaleInvoicePayment(SaleInvoicePayment entity)
+        public async Task<int> AddSaleInvoicePayment(SaleInvoicePayment saleInvoicePayment)
         {
             try
             {
 
-                var _invoice = await GetSaleInvoiceById(entity.SaleInvoiceId);
+                var _invoice = await GetSaleInvoiceById(saleInvoicePayment.SaleInvoiceId);
 
                 if (_invoice != null)
                 {
                     
-                    entity.Active = Active.Active;
-                    entity.CreationDate = DateTime.Now;
+                    saleInvoicePayment.Active = Active.Active;
+                    saleInvoicePayment.CreationDate = DateTime.Now;
                     
-                    _appDbContext.SaleInvoicePayments.Add(entity);
+                    _appDbContext.SaleInvoicePayments.Add(saleInvoicePayment);
                 }
 
                 return await _appDbContext.SaveChangesAsync();
@@ -112,9 +112,25 @@ namespace HUECL.alpha._6_0.Models
             }
         }
 
-        public Task<SaleInvoicePayment?> GetAllSaleInvoicePayment(int Id)
+        public async Task<IEnumerable<SaleInvoicePayment>?> GetAllSaleInvoicePayment(int Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _appDbContext.
+                    SaleInvoicePayments.
+                    Where(i => i.SaleInvoiceId == Id && i.Active == Active.Active).
+                    ToListAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
         }
 
         public async Task<SaleInvoice?> GetSaleInvoiceById(int Id)
@@ -124,6 +140,7 @@ namespace HUECL.alpha._6_0.Models
                 return await _appDbContext.
                     SaleInvoices.
                     Include(i => i.SaleInvoicePayments).
+                    Include(d => d.SaleDelivery).
                     FirstOrDefaultAsync(t => t.Id == Id && t.Active == Active.Active);
 
             }
