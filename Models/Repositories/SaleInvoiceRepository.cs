@@ -52,6 +52,36 @@ namespace HUECL.alpha._6_0.Models
             }
         }
 
+        public async Task<int> AddSaleInvoicePayment(SaleInvoicePayment entity)
+        {
+            try
+            {
+
+                var _invoice = await GetSaleInvoiceById(entity.SaleInvoiceId);
+
+                if (_invoice != null)
+                {
+                    
+                    entity.Active = Active.Active;
+                    entity.CreationDate = DateTime.Now;
+                    
+                    _appDbContext.SaleInvoicePayments.Add(entity);
+                }
+
+                return await _appDbContext.SaveChangesAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
         public async Task<int> DeleteInvoicePaymet(int id)
         {
             try

@@ -145,11 +145,11 @@ else
     </div>
 </div>
 
-<div class="modal fade" id="modalAddSaleInvoicePayment" tabindex="-1" aria-labelledby="modalAddSaleInvoicePaymentLabel" aria-hidden="true">
+<div class="modal fade" id="modalAddSaleInvoicePayment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAddSaleInvoicePaymentLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalAddSaleInvoicePaymentLabel">Agregar Pago Factura</h1>
+                <h1 class="modal-title fs-5" id="modalAddSaleInvoicePaymentLabel">Pago Factura</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="_containerAddSaleInvoicePayment">
@@ -166,7 +166,7 @@ else
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this item?
+                Está seguro que desea eliminar el Pago?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCancelDeletePayment">Cancel</button>
@@ -289,7 +289,6 @@ else
 
             $(document).on('click', '#addDeliveryItem', function () {
                 var _saleDeliveryId = $(this).data('id');
-                console.log(_saleDeliveryId);
 
                 var data = {
                     SaleDeliveryId: _saleDeliveryId
@@ -485,14 +484,6 @@ else
                     });
             });
 
-            $(document).on('click', 'button[data-paymentdelete]', function () {
-                paymentToDelete = $(this).attr('data-paymentdelete');
-                rowrowToDelete = $(this).closest('tr');
-
-                $('#modalSaleInvoice').modal('hide');
-                $('#confDeletePayment').modal('show');
-            });
-
             $('#confDeleteDeliveryItem').on('click', function () {
 
                 $.ajax({
@@ -579,25 +570,93 @@ else
                 });
             });
 
+            $("#confirmationModal").on('hidden.bs.modal', function () {
+                dataIdToDelete = undefined;
+            });
+
+            $("#confDeleteDelivery").on('hidden.bs.modal', function () {
+                deliveryToDelete = undefined;
+            });
+
+            /* Invoice Payment helpers ++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+            $(document).on('click', 'button[data-paymentdelete]', function () {
+                paymentToDelete = $(this).attr('data-paymentdelete');
+                rowrowToDelete = $(this).closest('tr');
+                $("#btnDeletePayment").html("Eliminar");
+
+                $('#modalSaleInvoice').modal('hide');
+                $('#confDeletePayment').modal('show');
+            });
+
+            $(document).on('click', '#addInvoicePayment', function () { 
+                var _data = $(this).attr('data-id');
+
+                $.ajax
+                    ({
+                        url: '/SaleInvoices/AddSaleInvoicePayment',
+                        type: 'GET',
+                        data: { Id: _data },
+                        success: function (data) {
+                            $("#_containerAddSaleInvoicePayment").html(data);
+                            $("#modalSaleInvoice").modal('hide');
+                            $("#modalAddSaleInvoicePayment").modal('show');
+                        },
+                        error: function (xhr, status, error) {
+                            $("#modalAddSaleInvoicePayment").modal('hide');
+                            $("#modalSaleInvoice").modal('hide');
+
+                            var _msg = '';
+                            _msg = '<div class="bd-callout bd-callout-danger"><strong>'
+                                + xhr.status + ' : ' + xhr.statusText +
+                                '</strong></div>';
+                            $('#_ContainerErrorMessage').html(_msg);
+                            $('#modalErrorMessage').modal('show');
+                        },
+                        complete: function () {
+
+                        }
+                    });
+            });
+
+            $(document).on('click', '#btnAddSaleInvoicePayment', function () {
+                
+                $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
+
+                $.ajax
+                    ({
+                        url: '/SaleInvoices/AddSaleInvoicePayment',
+                        type: 'POST',
+                        data: $("#frmAddSaleInvoicePayment").serialize(),
+                        success: function (data) {
+                            $('#_containerSaleInvoice').html(data);
+                            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+                            $('#modalAddSaleInvoicePayment').modal('hide');
+                            $('#modalSaleInvoice').modal('show');
+                        },
+                        error: function (xhr, status, error) {
+                            $('#modalAddSaleInvoicePayment').modal('hide');
+                            $('#modalSaleInvoice').modal('show');
+                        }
+                    });
+            });
+
             $('#btnDeletePayment').on('click', function () {
-                $('#confDeletePayment').modal('hide');
-                $('#modalSaleInvoice').modal('show');
-                var loading = $('#loadingPayment');
-                loading.show();
+
+                $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
 
                 $.ajax({
                     url: '/SaleInvoices/DeletePayment',
                     type: 'POST',
                     data: { Id: paymentToDelete },
                     success: function (data) {
+                        $('#confDeletePayment').modal('hide');
+                        $('#modalSaleInvoice').modal('show');
 
-                        rowrowToDelete.fadeOut(800, function () { 
+                        rowrowToDelete.fadeOut(300, function () {
                             $(this).remove();
-                            // if ($('#paymentsTable tbody').find('tr').length > 0) 
-                            // {
-                                
-                            // }
-                            loading.hide();
                         });
 
                         // var status = data.status;
@@ -629,7 +688,7 @@ else
                         //     $("#addDelivery").prop('disabled', false);
                         // }
 
-                        
+
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr);
@@ -653,18 +712,11 @@ else
                 $('#modalSaleInvoice').modal('show');
             });
 
-            $("#confirmationModal").on('hidden.bs.modal', function () {
-                dataIdToDelete = undefined;
-            });
-
-            $("#confDeleteDelivery").on('hidden.bs.modal', function () {
-                deliveryToDelete = undefined;
-            });
-
-            $("#confDeleteDelivery").on('hidden.bs.modal', function () {
+            $("#confDeletePayment").on('hidden.bs.modal', function () {
                 paymentToDelete = undefined;
             });
 
+            /***************************************************************************/
         });
 
     </script>

@@ -1,4 +1,5 @@
-﻿using HUECL.alpha._6_0.Models;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using HUECL.alpha._6_0.Models;
 using HUECL.alpha._6_0.Models.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -28,7 +29,78 @@ namespace HUECL.alpha._6_0.Controllers
             _saleInvoiceRepository = saleInvoiceRepository;
         }
 
-        
+        [HttpGet]
+        public async Task<IActionResult> AddSaleInvoicePayment(int Id)
+        {
+            try 
+            {
+                var _invoice = await _saleInvoiceRepository.GetSaleInvoiceById(Id);
+                if(_invoice == null)
+                {
+                    return BadRequest(new { msg = "No existe la factura en sistema. Intente nuevamente" });
+                }
+                SaleInvoicePayment _payment = new SaleInvoicePayment 
+                {
+                    SaleInvoiceId = _invoice.Id,
+                    SaleInvoice = _invoice
+                };
+                return PartialView("_SaleInvoicePaymentCreate", _payment);
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSaleInvoicePayment(SaleInvoicePayment saleInvoicePayment)
+        {
+            //TODO: Falta validar que la suma de pagos no sea mayor al Total Invoice
+            try 
+            {
+                if (saleInvoicePayment.TotalPayment == 0) 
+                {
+                    return BadRequest(new { msg = "Debe ingresar un valor mayor a 0. Intente nuevamente" });
+                }
+
+                var _invoice = await _saleInvoiceRepository.GetSaleInvoiceById(saleInvoicePayment.SaleInvoiceId);
+                
+                if (_invoice == null) 
+                {
+                    return BadRequest(new { msg = "No existe la factura en sistema. Intente nuevamente" });
+                }
+
+                if(await _saleInvoiceRepository.AddSaleInvoicePayment(saleInvoicePayment) == 0) 
+                {
+                    return StatusCode(500, "Error al ingresar pago. Intente nuevamente");
+                }
+
+                var _result = await _saleInvoiceRepository.GetSaleInvoiceById(saleInvoicePayment.SaleInvoiceId);
+                if (_result == null) 
+                {
+                    return BadRequest(new { msg = "No existe la factura en sistema. Intente nuevamente" });
+                }
+
+                return PartialView("_SaleInvoiceDetail", _result);
+
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> AddSaleInvoice(int Id)
@@ -117,7 +189,7 @@ namespace HUECL.alpha._6_0.Controllers
                 return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> DeletePayment(int Id)
         {
