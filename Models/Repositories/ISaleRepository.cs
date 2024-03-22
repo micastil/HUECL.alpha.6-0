@@ -10,7 +10,8 @@
             string? searchValue,
             int sortColumnIndex,
             string? sortColumnName,
-            string? sortDirection);
+            string? sortDirection, 
+            int selectedYear);
         Task<IEnumerable<Sale>> GetAllSales();
         Task<Sale> GetSaleById(int id);
         Task<int> AddSale(Sale entity);

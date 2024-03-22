@@ -404,7 +404,8 @@ namespace HUECL.alpha._6_0.Models.Repositories
             string? searchValue, 
             int sortColumnIndex, 
             string? sortColumnName, 
-            string? sortDirection)
+            string? sortDirection,
+            int selectedYear)
         {
             try
             {
@@ -449,7 +450,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
                         // Add cases for other sortable columns as needed
                 }
 
-                dataTablesResult.Data = await query.Where(p => p.Active == Active.Active)
+                dataTablesResult.Data = await query.Where(p => p.Active == Active.Active && p.Date.Year == selectedYear)
                     .Skip(skip)
                     .Take(pageSize)
                     .Select(p => new SaleViewModel

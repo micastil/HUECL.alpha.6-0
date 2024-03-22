@@ -58,7 +58,7 @@ namespace HUECL.alpha._6_0.Controllers
                 var _start = Request.Form["start"].FirstOrDefault();
                 var _length = Request.Form["length"].FirstOrDefault();
                 var _searchValue = Request.Form["search[value]"].FirstOrDefault();
-                //var _year = Request.Form["year"].FirstOrDefault();
+                var _selectedYear = int.Parse(Request.Form["currentYear"].FirstOrDefault());
 
                 if (!int.TryParse(_start, out int _skip))
                     return StatusCode(500, "Ha ocurrido un error en la aplicacion");
@@ -77,7 +77,8 @@ namespace HUECL.alpha._6_0.Controllers
                     _searchValue,
                     _sortColumnIndex,
                     _sortColumnName,
-                    _sortDirection
+                    _sortDirection,
+                    _selectedYear
                     );
 
                 return Json(new

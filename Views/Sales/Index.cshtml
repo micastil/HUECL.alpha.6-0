@@ -3,19 +3,24 @@
 </a>
 
 
-<div class="row">
-    <div class="dropdown">
-        <button class="btn btn-primary btn-sm mb-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Seleccionar Año
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">2020</a></li>
-            <li><a class="dropdown-item" href="#">2021</a></li>
-            <li><a class="dropdown-item" href="#">2022</a></li>
-            <li><a class="dropdown-item" href="#">2023</a></li>
-            <li><a class="dropdown-item" href="#">2024</a></li>
-        </ul>
-    </div>
+<div class="form-floating mb-3">
+    <select class="form-control" id="yearFilter" name="yearFilter">
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+    </select>
+    <label class="form-label" for="yearFilter">Seleccionar Año</label>
 </div>
 
 
@@ -34,11 +39,24 @@
 
 @section scripts {
     <script>
+
         $(document).ready(function () {
+            var currentYear = (new Date).getFullYear();
+
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
-            $('#salesTable').DataTable({
+            var selectedYear = localStorage.getItem('selectedYear');
+
+            if (selectedYear) {
+                $("#yearFilter").val(selectedYear)
+            }
+            else 
+            {
+                $("#yearFilter").val(currentYear)
+            }
+
+            var salesDataTable = $('#salesTable').DataTable({
                 language: {
                     info: 'Pagina _PAGE_ de _PAGES_',
                     infoEmpty: 'No hay informacion disponible',
@@ -58,11 +76,11 @@
                 serverSide: true,
                 ajax: {
                     url: '@Url.Action("GetSales", "Sales")',
-                    type: 'POST'
-                    // data: function (d) 
-                    // {
-                    //     d.year = '2022';
-                    // }
+                    type: 'POST',
+                    data: function (d) 
+                    {
+                        d.currentYear = $("#yearFilter").val();
+                    }
                 },
                 columns: [
                     { data: 'customer' },
@@ -100,6 +118,10 @@
                 }
             });
 
+            $("#yearFilter").on('change', function () {
+                localStorage.setItem('selectedYear', $(this).val());
+                salesDataTable.ajax.reload();
+            });
         });
     </script>
 }

@@ -50,10 +50,12 @@ namespace HUECL.alpha._6_0.Models
         public Active Active { get; set; }
 
         [ForeignKey("FK_SaleItem_Sale_SaleId")]
+        [Display(Name = "Orden de Compra")]
         public int SaleId { get; set; }
         public Sale Sale { get; set; } = null!;
 
         [ForeignKey("FK_SaleItem_Sale_ProductId")]
+        [Display(Name = "Producto")]
         public int ProductId { get; set; }
         public Product Product { get; set; } = null!;
     }

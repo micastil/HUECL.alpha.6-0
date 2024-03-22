@@ -12,7 +12,7 @@
             </div>
 
             <div class="form-floating mb-3">
-                <input asp-for="DeliveryDate" class="form-control" value="@DateTime.Today" />
+                <input asp-for="DeliveryDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                 <label asp-for="DeliveryDate" class="form-label"></label>
                 <span asp-validation-for="DeliveryDate" class="text-danger"></span>
             </div>
