@@ -1,5 +1,7 @@
-﻿using HUECL.alpha._6_0.Models;
+﻿using HUECL.alpha._6_0.Areas.Identity.Data;
+using HUECL.alpha._6_0.Models;
 using HUECL.alpha._6_0.Models.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 
@@ -11,18 +13,27 @@ namespace HUECL.alpha._6_0.Controllers
         private readonly ISaleDeliveryRepository _saleDeliveryRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly ILogger<SalesController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public SaleDeliveriesController(
             AppDbContext appDbcontext, 
             ISaleDeliveryRepository saleDeliveryRepository, 
             ISaleRepository saleRepository, 
-            ILogger<SalesController> logger
+            ILogger<SalesController> logger,
+            UserManager<ApplicationUser> userManager
             )
         {
             _appDbcontext = appDbcontext;
             _saleDeliveryRepository = saleDeliveryRepository;
             _saleRepository = saleRepository;
             _logger = logger;
+            _userManager = userManager;
+        }
+
+        public IActionResult Index() 
+        {
+            var currentUser = _userManager.GetUserAsync(this.User);
+            return View();
         }
 
         [HttpPost]

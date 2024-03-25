@@ -30,11 +30,16 @@
                 </label>
             </div>
 
-            <button type="button" id="loginButton" class="btn btn-primary w-100 py-2">Iniciar sesion</button>
+            <button type="submit" id="loginButton" class="btn btn-primary w-100 py-2">Iniciar sesion</button>
 
         </form>
     </main>
 </div>
 
-
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 

@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 var conStrBuilder = new SqlConnectionStringBuilder(
-        builder.Configuration.GetConnectionString("Desktop"));
+        builder.Configuration.GetConnectionString("External"));
 conStrBuilder.Password = builder.Configuration["ExternalPassword"];
 var connection = conStrBuilder.ConnectionString;
 

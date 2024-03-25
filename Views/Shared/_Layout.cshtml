@@ -30,11 +30,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Productos</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sales" asp-action="Index">Ventas</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Ventas
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Sales" asp-action="Index">Ordenes de Compra</a></li>
+                                <li><a class="dropdown-item" asp-controller="SaleDeliveries" asp-action="Index">Despachos</a></li>
+                                <li><a class="dropdown-item" asp-controller="SaleInvoices" asp-action="Index">Facturas</a></li>
+                            </ul>
                         </li>
                     </ul>
-                    @*<partial name="_LoginPartial"/>*@
+                    <partial name="_LoginPartial"/>
                 </div>
             </div>
         </nav>
@@ -54,7 +61,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-    
+
     <script src="~/lib/datatables/js/jquery.dataTables.js"></script>
     <script src="~/lib/datatables/js/dataTables.bootstrap5.js"></script>
 
