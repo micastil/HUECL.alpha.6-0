@@ -6,6 +6,8 @@ using HUECL.alpha._6_0.Models.Repositories;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authentication;
+using HUECL.alpha._6_0.Areas.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,16 +23,26 @@ var connection = conStrBuilder.ConnectionString;
 //    options.UseSqlServer(builder.Configuration["ConnectionStrings:External"]);
 //});
 
-builder.Services.AddDbContext<AppDbContext>(options => {
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
     options.UseSqlServer(connection);
 });
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+    { 
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+    })
+    .AddErrorDescriber<SpanishIdentityErrorDescriber>()
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddControllers(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
+builder.Services.AddScoped<IClaimsTransformation, ClaimsTransformer>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleDeliveryRepository, SaleDeliveryRepository>();
@@ -63,7 +75,7 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication(); ;
 
 app.UseAuthorization();
 

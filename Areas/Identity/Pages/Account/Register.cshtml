@@ -5,39 +5,57 @@
 }
 
 
-    <div class="row justify-content-center">
-        <div class="col-6">
-            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+<div class="row justify-content-center">
+    <div class="col-6">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
 
-                <h1 class="h3 mb-3 fw-normal text-center">Registrar nuevo usuario</h1>
+            <h1 class="h3 mb-3 fw-normal text-center">Registrar nuevo usuario</h1>
 
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                    <label asp-for="Input.Email" class="form-label"></label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
-                </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Email" class="form-label"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
-                    <label asp-for="Input.Password" class="form-label"></label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.Password" class="form-label"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
-                    <label asp-for="Input.ConfirmPassword" class="form-label"></label>
-                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
 
-                <div class="form-floating mb-3">
-                    <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">Registrar</button>
-                </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Name" class="form-control" autocomplete="name" aria-required="true" />
+                <label asp-for="Input.Name" class="form-label"></label>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
 
-            </form>
-        </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" />
+                <label asp-for="Input.LastName" class="form-label"></label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.BirthDate" class="form-control" autocomplete="birthdate" aria-required="true" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <label asp-for="Input.BirthDate" class="form-label"></label>
+                <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">Registrar</button>
+            </div>
+
+        </form>
     </div>
+</div>
 
 
 

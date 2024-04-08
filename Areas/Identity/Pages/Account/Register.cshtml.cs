@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
 {
@@ -75,8 +76,8 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Debe ingresar un correo electrónico")]
+            [EmailAddress(ErrorMessage = "Debe ingresar un correo valido")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
@@ -84,8 +85,8 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Debe ingresar un Password")]
+            [StringLength(100, ErrorMessage = "La {0} debe ser por lo menos {2} y como maximo {1} caracteres de largo.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
@@ -95,9 +96,22 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmar password")]
+            [Compare("Password", ErrorMessage = "El password y la confirmacion no son iguales. ")]
             public string ConfirmPassword { get; set; }
+
+            [Required(ErrorMessage = "Debe ingresar Nombre")]
+            [Display(Name = "Nombre")]
+            public string Name { get; set; }
+
+            [Required(ErrorMessage = "Debe ingresar Apellido")]
+            [Display(Name = "Apellido")]
+            public string LastName { get; set; }
+
+            [Display(Name = "Fecha Nacimiento")]
+            [DataType(DataType.Date)]
+            public DateTime BirthDate { get; set; } = DateTime.Now;
+
         }
 
 
@@ -117,11 +131,17 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Name = Input.Name;
+                user.LastName = Input.LastName;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    await _userManager.AddClaimAsync(user,
+                        new Claim("birthdate", Input.BirthDate.ToShortDateString()));
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
