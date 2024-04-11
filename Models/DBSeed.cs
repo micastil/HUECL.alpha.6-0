@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using HUECL.alpha._6_0.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 
 namespace HUECL.alpha._6_0.Models
 {
@@ -121,6 +123,43 @@ namespace HUECL.alpha._6_0.Models
 
 
 
+        }
+
+        public static async Task SeedSuperUser(IApplicationBuilder applicationBuilder, IConfiguration configurationApp)
+        {
+            using (var scope = applicationBuilder.ApplicationServices.CreateScope()) 
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                var secretPass = configurationApp["ExternalPassword"];
+
+                if (!await roleManager.RoleExistsAsync("SuperAdministrator"))
+                {
+                    var role = new IdentityRole("SuperAdministrator");
+                    await roleManager.CreateAsync(role);
+                }
+
+                if (await userManager.FindByNameAsync("SuperUser") == null)
+                {
+                    var superUser = new ApplicationUser
+                    {
+                        UserName = "admin@admin.admin",
+                        Email = "admin@admin.admin",
+                    };
+
+                    var result = await userManager.CreateAsync(superUser, secretPass);
+
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(superUser, "SuperAdministrator");
+                    }
+                    else
+                    {
+                        throw new ApplicationException("Error creating SuperUser.");
+                    }
+                }
+            }
         }
     }
 }

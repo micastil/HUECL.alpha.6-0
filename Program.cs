@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authentication;
 using HUECL.alpha._6_0.Areas.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,9 +34,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
         options.Password.RequireDigit = true;
-        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = true;
     })
+    .AddRoles<IdentityRole>()
     .AddErrorDescriber<SpanishIdentityErrorDescriber>()
     .AddEntityFrameworkStores<AppDbContext>();
 
@@ -91,5 +93,6 @@ app.UseEndpoints(
 
 DBSeed.SeedBase(app);
 DBSeed.SeedCategories(app);
+await DBSeed.SeedSuperUser(app, app.Configuration);
 
 app.Run();
