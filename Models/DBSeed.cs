@@ -140,12 +140,12 @@ namespace HUECL.alpha._6_0.Models
                     await roleManager.CreateAsync(role);
                 }
 
-                if (await userManager.FindByNameAsync("SuperUser") == null)
+                if (await userManager.FindByNameAsync("super@user.admin") == null)
                 {
                     var superUser = new ApplicationUser
                     {
-                        UserName = "admin@admin.admin",
-                        Email = "admin@admin.admin",
+                        UserName = "super@user.admin",
+                        Email = "super@user.admin",
                     };
 
                     var result = await userManager.CreateAsync(superUser, secretPass);

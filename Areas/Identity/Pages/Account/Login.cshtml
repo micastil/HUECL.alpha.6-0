@@ -1,8 +1,14 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization
 @model LoginModel
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Iniciar Sesion";
+}
+
+@{
+    var superUser = await AuthorizationService.AuthorizeAsync(User, "IsSuperUser");
 }
 
 <main class="form-signin w-100 m-auto">
@@ -28,9 +34,13 @@
         <button id="login-submit" type="submit" class="btn btn-primary w-100 py-2">Iniciar sesion</button>
     </form>
     <hr />
-    <div class="form-floating">
-        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registrar un nuevo usuario</a>
-    </div>
+
+    @if (superUser.Succeeded)
+    {
+        <div class="form-floating">
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registrar un nuevo usuario</a>
+        </div>
+    }
 </main>
 
 @section Scripts {

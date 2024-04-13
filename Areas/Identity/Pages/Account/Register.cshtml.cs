@@ -23,6 +23,7 @@ using System.Security.Claims;
 
 namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
 {
+    [Authorize(Policy = "IsSuperUser")]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

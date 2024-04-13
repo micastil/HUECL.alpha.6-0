@@ -59,6 +59,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddAuthorization(o => 
+{
+    o.AddPolicy("IsSuperUser", o => o.RequireRole("SuperAdministrator"));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,7 +83,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication(); ;
-
 app.UseAuthorization();
 
 app.UseSession();

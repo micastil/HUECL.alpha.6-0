@@ -137,9 +137,9 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
                 else
                 {
                     if (isAjaxRequest) {
-                        return new JsonResult(new { success = false, errorMessage = "Invalid login attempt." });
+                        return new JsonResult(new { success = false, errorMessage = "Error al intentar ingresar." });
                     }
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Error al intentar ingresar.");
                     return Page();
                     
                 }
