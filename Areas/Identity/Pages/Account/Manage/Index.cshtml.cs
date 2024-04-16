@@ -60,6 +60,12 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Numero de Telefono")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Nombre")]
+            public string Name { get; set; }
+            
+            [Display(Name = "Apellido")]
+            public string LastName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -71,7 +77,9 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Name = user.Name,
+                LastName = user.LastName
             };
         }
 
@@ -110,6 +118,17 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Error inesperado intentando almacenar el numero de telefono.";
                     return RedirectToPage();
                 }
+            }
+            
+            user.Name = Input.Name;
+            user.LastName = Input.LastName;
+            
+            var setNameResult = await _userManager.UpdateAsync(user);
+
+            if (!setNameResult.Succeeded)
+            {
+                StatusMessage = "Error inesperado intentando almacenar Nombre y Apellido.";
+                return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);

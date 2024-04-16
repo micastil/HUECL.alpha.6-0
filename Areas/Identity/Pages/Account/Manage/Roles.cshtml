@@ -1,0 +1,30 @@
+﻿@page
+@model RolesModel
+@{
+}
+
+@{
+    ViewData["Title"] = "Roles Cuenta";
+    ViewData["ActivePage"] = ManageNavPages.Roles;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        @if (Model.RolesList.Count > 0)
+        {
+            <ul class="list-group list-group-numbered">
+                @foreach (var item in Model.RolesList)
+                {
+                    <li class="list-group-item">@item.ToString()</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No existen Roles para el Usuario</p>
+        }
+
+    </div>
+</div>

@@ -13,25 +13,25 @@
 
 <main class="form-signin w-100 m-auto">
     <form id="account" method="post">
+
         <h1 class="h3 mb-3 fw-normal text-center">Iniciar sesion</h1>
+        
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-floating">
+        
+        <div class="form-floating mb-3">
             <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
             <label asp-for="Input.Email" class="form-label"></label>
             <span asp-validation-for="Input.Email" class="text-danger"></span>
         </div>
-        <div class="form-floating">
+        
+        <div class="form-floating mb-3">
             <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
             <label asp-for="Input.Password" class="form-label"></label>
             <span asp-validation-for="Input.Password" class="text-danger"></span>
         </div>
-        <div class="form-check text-start my-3">
-            <label asp-for="Input.RememberMe" class="form-label">
-                <input class="form-check-input" asp-for="Input.RememberMe" />
-                @Html.DisplayNameFor(m => m.Input.RememberMe)
-            </label>
-        </div>
-        <button id="login-submit" type="submit" class="btn btn-primary w-100 py-2">Iniciar sesion</button>
+        
+        <button id="login-submit" type="submit" class="btn btn-success w-100 py-2">Iniciar sesion</button>
+
     </form>
     <hr />
 
