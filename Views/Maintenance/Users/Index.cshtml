@@ -1,0 +1,21 @@
+﻿@using HUECL.alpha._6_0.Areas.Identity.Data
+@using Microsoft.AspNetCore.Authorization
+
+@model IQueryable<ApplicationUser>
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var superUser = await AuthorizationService.AuthorizeAsync(User, "IsSuperUser");
+}
+
+@if (superUser.Succeeded)
+{
+    <h1>
+        Hola Usuarios
+    </h1>
+    foreach (var item in Model)
+    {
+        <p>@item.Name</p>
+    }
+}
+

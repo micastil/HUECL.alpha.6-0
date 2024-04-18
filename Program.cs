@@ -9,11 +9,13 @@ using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authentication;
 using HUECL.alpha._6_0.Areas.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
 
 var conStrBuilder = new SqlConnectionStringBuilder(
         builder.Configuration.GetConnectionString("External"));
@@ -64,6 +66,13 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("IsSuperUser", o => o.RequireRole("SuperAdministrator"));
 });
 
+builder.Services.Configure<RazorViewEngineOptions>(options =>
+{
+    // Add view search paths for Maintenance folder
+    options.ViewLocationFormats.Add("/Views/Maintenance/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Maintenance/Shared/{0}.cshtml");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -92,7 +101,13 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.UseEndpoints(
-    endpoints => endpoints.MapRazorPages()
+    endpoints => 
+    {
+        endpoints.MapControllerRoute(
+            name: "Maintenance",
+            pattern: "Maintenance/{controller=Home}/{action=Index}/{id?}");
+        endpoints.MapRazorPages();
+    }
 );
 
 DBSeed.SeedBase(app);
