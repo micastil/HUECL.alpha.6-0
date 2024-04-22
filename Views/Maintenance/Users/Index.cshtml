@@ -10,12 +10,46 @@
 
 @if (superUser.Succeeded)
 {
-    <h1>
-        Hola Usuarios
-    </h1>
-    foreach (var item in Model)
-    {
-        <p>@item.Name</p>
-    }
+    <a asp-action="CreateUser" class="btn btn-success btn-sm mb-3" data-bs-toggle="tooltip" data-bs-title="Crear Usuario">
+        <i class="bi bi-person-plus"></i> Nuevo Usuario
+    </a>
+
+    <table id="usersTable" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Nombre</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.UserName</td>
+                    <td>@item.Email</td>
+                    <td>@item.Name @item.LastName</td>
+                    <td>
+                        <a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/Maintenance/Users/Details" data-id=@item.Id>
+                            <i class="bi bi-person-vcard-fill" style="vertical-align: middle;"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+
+        });
+    </script>
 }
 

@@ -19,5 +19,12 @@ namespace HUECL.alpha._6_0.Controllers.Maintenance
         {
             return View(_userManager.Users);
         }
+
+        [Authorize(Policy = "IsSuperUser")]
+        [HttpPost]
+        public async Task<IActionResult> GetUsers() 
+        {
+            return Ok();
+        }
     }
 }
