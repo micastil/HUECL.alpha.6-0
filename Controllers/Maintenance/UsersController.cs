@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HUECL.alpha._6_0.Controllers.Maintenance
 {
+    [Authorize(Policy = "IsSuperUser")]
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -14,17 +15,16 @@ namespace HUECL.alpha._6_0.Controllers.Maintenance
             _userManager = userManager;
         }
 
-        [Authorize(Policy = "IsSuperUser")]
+        
         public IActionResult Index()
         {
             return View(_userManager.Users);
         }
 
-        [Authorize(Policy = "IsSuperUser")]
-        [HttpPost]
-        public async Task<IActionResult> GetUsers() 
+        public IActionResult Details(string id) 
         {
-            return Ok();
+
+            return View();
         }
     }
 }
