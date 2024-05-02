@@ -140,6 +140,24 @@ namespace HUECL.alpha._6_0.Models
                     await roleManager.CreateAsync(role);
                 }
 
+                if (!await roleManager.RoleExistsAsync("Manager"))
+                {
+                    var role = new IdentityRole("Manager");
+                    await roleManager.CreateAsync(role);
+                }
+
+                if (!await roleManager.RoleExistsAsync("Sales"))
+                {
+                    var role = new IdentityRole("Sales");
+                    await roleManager.CreateAsync(role);
+                }
+
+                if (!await roleManager.RoleExistsAsync("Guest"))
+                {
+                    var role = new IdentityRole("Guest");
+                    await roleManager.CreateAsync(role);
+                }
+
                 if (await userManager.FindByNameAsync("super@user.admin") == null)
                 {
                     var superUser = new ApplicationUser

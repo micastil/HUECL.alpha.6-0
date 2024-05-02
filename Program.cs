@@ -32,7 +32,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-    { 
+    {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
         options.Password.RequireDigit = true;
@@ -61,7 +61,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddAuthorization(o => 
+builder.Services.AddAuthorization(o =>
 {
     o.AddPolicy("IsSuperUser", o => o.RequireRole("SuperAdministrator"));
 });
@@ -69,8 +69,8 @@ builder.Services.AddAuthorization(o =>
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
     // Add view search paths for Maintenance folder
-    options.ViewLocationFormats.Add("/Views/Maintenance/{1}/{0}.cshtml");
-    options.ViewLocationFormats.Add("/Views/Maintenance/Shared/{0}.cshtml");
+    //options.ViewLocationFormats.Add("/Views/Maintenance/{1}/{0}.cshtml");
+    //options.ViewLocationFormats.Add("/Views/Maintenance/Shared/{0}.cshtml");
 });
 
 var app = builder.Build();
@@ -100,12 +100,19 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+//app.UseEndpoints(
+//    endpoints => 
+//    {
+//        endpoints.MapControllerRoute(
+//            name: "Maintenance",
+//            pattern: "Maintenance/{controller=Home}/{action=Index}/{id?}");
+//        endpoints.MapRazorPages();
+//    }
+//);
+
 app.UseEndpoints(
-    endpoints => 
+    endpoints =>
     {
-        endpoints.MapControllerRoute(
-            name: "Maintenance",
-            pattern: "Maintenance/{controller=Home}/{action=Index}/{id?}");
         endpoints.MapRazorPages();
     }
 );

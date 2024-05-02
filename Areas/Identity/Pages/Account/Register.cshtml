@@ -50,18 +50,16 @@
             </div>
 
             <div class="form-floating mb-3">
+                <select asp-for="Input.roleId" class="form-control" asp-items="Model.roleList"></select>
+            </div>
+
+            <div class="form-floating mb-3">
                 <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">Registrar</button>
             </div>
 
         </form>
     </div>
 </div>
-
-
-
-
-
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
