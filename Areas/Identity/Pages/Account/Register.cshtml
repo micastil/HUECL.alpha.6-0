@@ -51,6 +51,8 @@
 
             <div class="form-floating mb-3">
                 <select asp-for="Input.roleId" class="form-control" asp-items="Model.roleList"></select>
+                <label asp-for="Input.roleId" class="form-label"></label>
+                <span asp-validation-for="Input.roleId" class="text-danger"></span>
             </div>
 
             <div class="form-floating mb-3">

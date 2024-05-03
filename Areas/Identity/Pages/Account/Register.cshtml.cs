@@ -119,7 +119,9 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
             [DataType(DataType.Date)]
             public DateTime BirthDate { get; set; } = DateTime.Now;
 
-            public int roleId { get; set; }
+            [Required(ErrorMessage = "Debe seleccionar un Rol")]
+            [Display(Name="Rol")]
+            public string roleId { get; set; }
         }
 
 
@@ -152,6 +154,23 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
                     await _userManager.AddClaimAsync(user,
                         new Claim("birthdate", Input.BirthDate.ToShortDateString()));
 
+
+                    var selectedRoleName = await _roleManager.FindByIdAsync(Input.roleId);
+
+                    if (selectedRoleName != null) 
+                    {
+                        var roleResult = await _userManager.AddToRoleAsync(user, selectedRoleName.Name);
+
+                        if(roleResult.Succeeded) 
+                        {
+                            _logger.LogInformation("User added to Role: " + selectedRoleName.Name);
+                            return LocalRedirect(returnUrl);
+                        }
+                        ModelState.AddModelError(string.Empty, "No es posible agregar al Rol: " + selectedRoleName.Name);
+                    }
+
+                    ModelState.AddModelError(string.Empty, "No existe el Rol");
+
                     //var userId = await _userManager.GetUserIdAsync(user);
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -173,8 +192,8 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
                     //    await _signInManager.SignInAsync(user, isPersistent: false);
                     //    return LocalRedirect(returnUrl);
                     //}
-
-                    return LocalRedirect(returnUrl);
+                    
+                    return Page();
                 }
                 foreach (var error in result.Errors)
                 {
