@@ -283,4 +283,10 @@ body {
     background-color: RGBA(var(--bs-danger-rgb),var(--bs-bg-opacity,1)) !important
 }
 
-
+.alert-user-list {
+    position: relative;
+    padding: 0.5rem 0.5rem;
+    margin-bottom: 0rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}

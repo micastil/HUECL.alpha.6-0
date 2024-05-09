@@ -18,11 +18,11 @@
         <i class="bi bi-person-plus"></i> Nuevo Usuario
     </a>
 
-    <table id="usersTable" class="table table-hover">
+    <table id="usersTable" class="table table-hover align-middle">
         <thead>
             <tr>
                 <th>Usuario</th>
-                <th>Rol</th>
+                <th class="col-2">Rol</th>
                 <th>Email</th>
                 <th>Nombre</th>
                 <th></th>
@@ -33,17 +33,20 @@
             {
                 <tr>
                     <td>@item.ApplicationUser.Name</td>
-                    <td>
+                    <td class="col-2">
                         @foreach (var rol in item.UserRoles)
                         {
-                            @rol.ToString()
+                            <div class="alert-user-list alert-primary" style="padding:0.5em" role="alert">
+                                <i class="bi bi-person-check-fill"></i>
+                                <strong>@rol.ToString()</strong>
+                            </div>
                         }
                     </td>
                     <td>@item.ApplicationUser.Email</td>
                     <td>@item.ApplicationUser.Name @item.ApplicationUser.LastName</td>
                     <td>
                         <a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/Maintenance/Users/Details?id=@item.ApplicationUser.Id">
-                            <i class="bi bi-person-vcard-fill" style="vertical-align: middle;"></i>
+                            <i class="bi bi-person-vcard-fill"></i>
                         </a>
                     </td>
                 </tr>
