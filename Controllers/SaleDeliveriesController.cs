@@ -32,7 +32,6 @@ namespace HUECL.alpha._6_0.Controllers
 
         public IActionResult Index() 
         {
-            var currentUser = _userManager.GetUserAsync(this.User);
             return View();
         }
 

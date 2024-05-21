@@ -55,6 +55,27 @@
                 <span asp-validation-for="Input.roleId" class="text-danger"></span>
             </div>
 
+            <div class="mb-3">
+                <div class="form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" asp-for="Input.CanRead" checked>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Lectura
+                    </label>
+                </div>
+                <div class="form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" asp-for="Input.CanWrite">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Escritura
+                    </label>
+                </div>
+                <div class="form-switch form-check-inline">
+                    <input class="form-check-input" type="checkbox" asp-for="Input.CanDelete">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Borrar
+                    </label>
+                </div>
+            </div>
+            
             <div class="form-floating mb-3">
                 <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2">Registrar</button>
             </div>

@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Authentication;
 using HUECL.alpha._6_0.Areas.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Razor;
+using HUECL.alpha._6_0.Areas.Identity.Pages;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using HUECL.alpha._6_0.Interfaces;
+using HUECL.alpha._6_0.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,15 +67,25 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddAuthorization(o =>
 {
-    o.AddPolicy("IsSuperUser", o => o.RequireRole("SuperAdministrator"));
+    o.AddPolicy("IsSuperUser", o => o.RequireRole(GlobalRoleName.Super));
+    o.AddPolicy("IsManager", o => o.RequireRole(GlobalRoleName.Manager));
+    o.AddPolicy("IsSales", o => o.RequireRole(GlobalRoleName.Sales));
+    o.AddPolicy("IsGuest", o => o.RequireRole(GlobalRoleName.Guest));
+
+    o.AddPolicy("CanRead", o => o.RequireClaim(GlobalPermissionType.CanRead, "true"));
+    o.AddPolicy("CanWrite", o => o.RequireClaim(GlobalPermissionType.CanWrite, "true"));
+    o.AddPolicy("CanDelete", o => o.RequireClaim(GlobalPermissionType.CanDelete, "true"));
 });
 
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
-    // Add view search paths for Maintenance folder
+    //Add view search paths for Maintenance folder
     //options.ViewLocationFormats.Add("/Views/Maintenance/{1}/{0}.cshtml");
     //options.ViewLocationFormats.Add("/Views/Maintenance/Shared/{0}.cshtml");
 });
+
+builder.Services.AddDataProtection();
+builder.Services.AddScoped<ICustomDataProtector, CustomDataProtector>();
 
 var app = builder.Build();
 

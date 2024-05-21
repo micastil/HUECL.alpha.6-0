@@ -1,8 +1,11 @@
 ﻿@page
+@using HUECL.alpha._6_0.Interfaces
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.DataProtection;
 
 @model IndexModel
 @inject IAuthorizationService AuthorizationService
+@inject ICustomDataProtector CustomProtector
 
 @{
     var superUser = await AuthorizationService.AuthorizeAsync(User, "IsSuperUser");
@@ -45,7 +48,9 @@
                     <td>@item.ApplicationUser.Email</td>
                     <td>@item.ApplicationUser.Name @item.ApplicationUser.LastName</td>
                     <td>
-                        <a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/Maintenance/Users/Details?id=@item.ApplicationUser.Id">
+                        @{ var encrypted = CustomProtector.Protect(item.ApplicationUser.Id);}
+
+                        <a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/Maintenance/Users/Details?id=@encrypted">
                             <i class="bi bi-person-vcard-fill"></i>
                         </a>
                     </td>

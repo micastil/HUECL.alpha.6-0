@@ -120,8 +120,18 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
             public DateTime BirthDate { get; set; } = DateTime.Now;
 
             [Required(ErrorMessage = "Debe seleccionar un Rol")]
-            [Display(Name="Rol")]
+            [Display(Name = "Rol")]
             public string roleId { get; set; }
+
+            [Display(Name = "Permiso Lectura")]
+            public bool CanRead { get; set; }
+
+            [Display(Name = "Permiso Escritura")]
+            public bool CanWrite { get; set; }
+
+            [Display(Name = "Permiso Borrar")]
+            public bool CanDelete { get; set; }
+
         }
 
 
@@ -152,16 +162,19 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     await _userManager.AddClaimAsync(user,
-                        new Claim("birthdate", Input.BirthDate.ToShortDateString()));
+                        new Claim(GlobalClaimTypes.Birthdate, Input.BirthDate.ToShortDateString()));
 
+                    if (Input.CanRead) { await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanRead, "true")); }
+                    if (Input.CanWrite) { await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanWrite, "true")); }
+                    if (Input.CanDelete) { await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanDelete, "true")); }
 
                     var selectedRoleName = await _roleManager.FindByIdAsync(Input.roleId);
 
-                    if (selectedRoleName != null) 
+                    if (selectedRoleName != null)
                     {
                         var roleResult = await _userManager.AddToRoleAsync(user, selectedRoleName.Name);
 
-                        if(roleResult.Succeeded) 
+                        if (roleResult.Succeeded)
                         {
                             _logger.LogInformation("User added to Role: " + selectedRoleName.Name);
                             return LocalRedirect(returnUrl);
@@ -192,7 +205,7 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
                     //    await _signInManager.SignInAsync(user, isPersistent: false);
                     //    return LocalRedirect(returnUrl);
                     //}
-                    
+
                     return Page();
                 }
                 foreach (var error in result.Errors)

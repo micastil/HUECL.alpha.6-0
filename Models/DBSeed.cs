@@ -1,6 +1,9 @@
-﻿using HUECL.alpha._6_0.Areas.Identity.Data;
+﻿using HUECL.alpha._6_0.Areas.Identity;
+using HUECL.alpha._6_0.Areas.Identity.Data;
+using HUECL.alpha._6_0.Areas.Identity.Pages;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel;
+using System.Security.Claims;
 
 namespace HUECL.alpha._6_0.Models
 {
@@ -171,6 +174,10 @@ namespace HUECL.alpha._6_0.Models
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(superUser, "SuperAdministrator");
+
+                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanRead, "true"));
+                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanWrite, "true"));
+                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanDelete, "true"));
                     }
                     else
                     {

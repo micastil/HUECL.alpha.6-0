@@ -26,24 +26,6 @@ namespace HUECL.alpha._6_0.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> IndexSalesOld()
-        {
-            try
-            {
-                return View(await _saleRepository.GetAllSales());
-            }
-            catch (SaleRepositoryCustomException ex)
-            {
-                _logger.LogInformation("Error en SalesController/Index: {mensaje}", ex.Message);
-                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("Error en SalesController/Index: {mensaje}", ex.Message);
-                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
-            }
-        }
-
         public IActionResult Index()
         {
             return View();

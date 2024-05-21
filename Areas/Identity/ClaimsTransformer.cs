@@ -34,10 +34,11 @@ namespace HUECL.alpha._6_0.Areas.Identity
             if(nameIdClaim == null) { return clonedPrincipal; }
 
             var user = await _UserStore.FindByIdAsync(nameIdClaim.Value, CancellationToken.None);
-            //if (user != null)
-            //{
-            //    identity.AddClaim(new Claim(GlobalClaimTypes.Name, user.Name));
-            //}
+            if (user != null)
+            {
+                identity.AddClaim(new Claim(GlobalClaimTypes.Name, user.Name));
+                identity.AddClaim(new Claim(GlobalClaimTypes.LastName, user.LastName));
+            }
 
             return clonedPrincipal;
         }

@@ -2,8 +2,10 @@
 {
     public static class GlobalClaimTypes
     {
-        public const string Name = "Name";
+        public const string Name = "name";
 
         public const string LastName = "lastname";
+
+        public const string Birthdate = "birthdate";
     }
 }
