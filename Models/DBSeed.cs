@@ -175,9 +175,9 @@ namespace HUECL.alpha._6_0.Models
                     {
                         await userManager.AddToRoleAsync(superUser, "SuperAdministrator");
 
-                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanRead, "true"));
-                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanWrite, "true"));
-                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanDelete, "true"));
+                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanRead, "True"));
+                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanWrite, "True"));
+                        await userManager.AddClaimAsync(superUser, new Claim(GlobalPermissionType.CanDelete, "True"));
                     }
                     else
                     {

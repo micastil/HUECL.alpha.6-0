@@ -2,7 +2,7 @@
 {
     public class SaleViewModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         public string? Customer { get; set; }
         public string? Number { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;

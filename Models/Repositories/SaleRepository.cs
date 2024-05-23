@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HUECL.alpha._6_0.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Data.Common;
 
@@ -8,11 +9,13 @@ namespace HUECL.alpha._6_0.Models.Repositories
     {
         private readonly AppDbContext _appDbContext;
         private readonly ILogger<SaleRepository> _logger;
+        private readonly ICustomDataProtector _customDataProtector;
 
-        public SaleRepository(AppDbContext appDbContext, ILogger<SaleRepository> logger)
+        public SaleRepository(AppDbContext appDbContext, ILogger<SaleRepository> logger, ICustomDataProtector customDataProtector)
         {
             _appDbContext = appDbContext;
             _logger = logger;
+            _customDataProtector = customDataProtector;
         }
 
         public async Task<int> AddSale(Sale entity)
@@ -455,7 +458,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
                     .Take(pageSize)
                     .Select(p => new SaleViewModel
                     {
-                        Id = p.Id,
+                        Id = _customDataProtector.Protect(p.Id.ToString()),
                         Customer = p.Customer.Name,
                         Number = p.Number,
                         Date = p.Date,

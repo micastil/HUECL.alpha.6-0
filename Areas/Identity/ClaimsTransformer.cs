@@ -16,31 +16,38 @@ namespace HUECL.alpha._6_0.Areas.Identity
 
         public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
         {
-            var clonedPrincipal = principal.Clone();
-
-            if(clonedPrincipal.Identity == null) 
+            try 
             {
+                var clonedPrincipal = principal.Clone();
+
+                if (clonedPrincipal.Identity == null)
+                {
+                    return clonedPrincipal;
+                }
+
+                var identity = (ClaimsIdentity)clonedPrincipal.Identity;
+
+                var existingClaim = identity.Claims.FirstOrDefault(
+                    c => c.Type == GlobalClaimTypes.Name
+                    );
+                if (existingClaim != null) { return clonedPrincipal; }
+
+                var nameIdClaim = identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (nameIdClaim == null) { return clonedPrincipal; }
+
+                var user = await _UserStore.FindByIdAsync(nameIdClaim.Value, CancellationToken.None);
+                if (user != null)
+                {
+                    identity.AddClaim(new Claim(GlobalClaimTypes.Name, user.Name));
+                    identity.AddClaim(new Claim(GlobalClaimTypes.LastName, user.LastName));
+                }
+
                 return clonedPrincipal;
-            }
-
-            var identity = (ClaimsIdentity)clonedPrincipal.Identity;
-            
-            var existingClaim = identity.Claims.FirstOrDefault(
-                c => c.Type == GlobalClaimTypes.Name
-                );
-            if(existingClaim != null) { return clonedPrincipal; }
-
-            var nameIdClaim = identity.Claims.FirstOrDefault( c => c.Type == ClaimTypes.NameIdentifier );
-            if(nameIdClaim == null) { return clonedPrincipal; }
-
-            var user = await _UserStore.FindByIdAsync(nameIdClaim.Value, CancellationToken.None);
-            if (user != null)
+            } 
+            catch (Exception ex) 
             {
-                identity.AddClaim(new Claim(GlobalClaimTypes.Name, user.Name));
-                identity.AddClaim(new Claim(GlobalClaimTypes.LastName, user.LastName));
+                return principal;
             }
-
-            return clonedPrincipal;
         }
     }
 }

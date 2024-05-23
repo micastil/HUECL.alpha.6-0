@@ -40,22 +40,22 @@
 
         <div id="editItem" class="accordion-collapse collapse show">
             <div class="accordion-body">
-                <form id="registerForm" method="post">
+                <form id="detailsForm" method="post">
                     <div class="mb-3">
                         <div class="form-switch form-check-inline">
-                            <input class="form-check-input" type="checkbox" asp-for="Input.CanRead" value="Input.CanRead">
+                            <input class="form-check-input" type="checkbox" asp-for="Input.CanRead">
                             <label class="form-check-label" for="flexCheckDefault">
                                 Lectura
                             </label>
                         </div>
                         <div class="form-switch form-check-inline">
-                            <input class="form-check-input" type="checkbox" asp-for="Input.CanWrite" value="Input.CanWrite">
+                            <input class="form-check-input" type="checkbox" asp-for="Input.CanWrite">
                             <label class="form-check-label" for="flexCheckDefault">
                                 Escritura
                             </label>
                         </div>
                         <div class="form-switch form-check-inline">
-                            <input class="form-check-input" type="checkbox" asp-for="Input.CanDelete" value="Input.CanDelete">
+                            <input class="form-check-input" type="checkbox" asp-for="Input.CanDelete">
                             <label class="form-check-label" for="flexCheckDefault">
                                 Borrar
                             </label>
@@ -66,6 +66,9 @@
                         <label asp-for="Input.roleId" class="form-label"></label>
                         <span asp-validation-for="Input.roleId" class="text-danger"></span>
                     </div>
+
+                    <input type="hidden" asp-for="Input.token" />
+
                     <div class="form-floating mb-3">
                         <button id="registerSubmit" type="submit" class="btn btn-success">Actualizar</button>
                     </div>
@@ -77,3 +80,29 @@
     </div>
 
 </div>
+
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="d-flex align-items-center">
+                    <strong role="status">Actualizando Usuario ...</strong>
+                    <div class="spinner-border ms-auto text-success" aria-hidden="true"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).on('click', '#registerSubmit', function () {
+            $("#loadingModal").modal('show');
+        });
+    </script>
+}

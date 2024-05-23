@@ -1,7 +1,7 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Lista Despachos";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
+} *@
 
 <div class="col-sm-3">
     <div class="form-floating mb-3">
@@ -29,12 +29,107 @@
 <table id="deliveriesTable" class="table table-hover">
     <thead>
         <tr>
-            <th>Numero Despacho</th>
-            <th>Fecha</th>
             <th>Cliente</th>
+            <th>Orden de Compra</th>
+            <th>Despacho</th>
+            <th>Fecha</th>
             <th>Total</th>
             <th>Estado</th>
             <th></th>
         </tr>
     </thead>
 </table>
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            var selectedYear = localStorage.getItem('selectedYear');
+
+            if (selectedYear) {
+                $("#yearFilter").val(selectedYear)
+            }
+            else {
+                $("#yearFilter").val(currentYear)
+            }
+
+            var deliveriesDataTable = $('#deliveriesTable').DataTable({
+                language: {
+                    info: 'Pagina _PAGE_ de _PAGES_',
+                    infoEmpty: 'No hay informacion disponible',
+                    infoFiltered: '(Filtrado desde _MAX_ items totales)',
+                    lengthMenu: 'Visualizar _MENU_ items por pagina',
+                    zeroRecords: 'No se ha encontrado informacion',
+                    search: "Buscar:",
+                    paginate: {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetSaleDeliveries", "SaleDeliveries")',
+                    type: 'POST',
+                    data: function (d) {
+                        d.currentYear = $("#yearFilter").val();
+                    }
+                },
+                columns: [
+                    { data: 'customer' },
+                    { 
+                        data: null,
+                        render: function (data, type, row) 
+                        {
+                            return '<a href="/Sales/Details?Id=' + data.saleId + '">'+ data.saleNumber +'</a>';
+                        }
+                    }, 
+                    {
+                        data: 'number'
+                    },
+                    {
+                        data: 'date',
+                        render: DataTable.render.date()
+                    },
+                    {
+                        data: 'total',
+                        render: DataTable.render.number(null, null, 0, '$')
+                    },
+                    {
+                        data: 'state',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (row.state == "Empty") { return "Sin Despachos"; }
+                            if (row.state == "WithItems") { return "Despacho Parcial"; }
+                            if (row.state == "WithInvoice") { return "Despacho Completo"; }
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<a data-bs-toggle="tooltip" data-bs-title="Detalle" href="/SaleDeliveries/Details?Id=' + data.id + '"><i class="bi-file-text" style="vertical-align: middle;"></i></a>';
+                        }
+                    }
+                ],
+                order: [[2, 'desc']],
+                drawCallback: function () {
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+
+            $("#yearFilter").on('change', function () {
+                localStorage.setItem('selectedYear', $(this).val());
+                deliveriesDataTable.ajax.reload();
+            });
+        });
+    </script>
+}

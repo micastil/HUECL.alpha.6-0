@@ -1,4 +1,6 @@
-﻿namespace HUECL.alpha._6_0.Models.Repositories
+﻿using HUECL.alpha._6_0.Models.ViewModels;
+
+namespace HUECL.alpha._6_0.Models.Repositories
 {
     public interface ISaleDeliveryRepository
     {
@@ -8,5 +10,15 @@
         Task<int> DeleteSaleDelivery(SaleDelivery saleDelivery);
         Task<SaleDelivery?> GetSaleDeliveryById(int Id);
         Task<IEnumerable<SaleDelivery>> GetAllSaleDeliveriesBySaleId(int SaleId);
+        Task<DataTablesViewModel<SaleDeliveryViewModel>> GetDataTablesSaleDelivery(
+            string? draw,
+            int skip,
+            int pageSize,
+            string? searchValue,
+            int sortColumnIndex,
+            string? sortColumnName,
+            string? sortDirection,
+            int selectedYear
+        );
     }
 }

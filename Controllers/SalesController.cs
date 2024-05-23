@@ -10,27 +10,36 @@ using HUECL.alpha._6_0.Models.Repositories;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using HUECL.alpha._6_0.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HUECL.alpha._6_0.Controllers
 {
+    [Authorize]
     public class SalesController : Controller
     {
         private readonly AppDbContext _appDbcontext;
         private readonly ISaleRepository _saleRepository;
         private readonly ILogger<SalesController> _logger;
+        private readonly ICustomDataProtector _customDataProtector;
 
-        public SalesController(AppDbContext appDbcontext, ISaleRepository saleRepository, ILogger<SalesController> logger)
+        public SalesController(AppDbContext appDbcontext, ISaleRepository saleRepository, ILogger<SalesController> logger, ICustomDataProtector customDataProtector)
         {
             _appDbcontext = appDbcontext;
             _saleRepository = saleRepository;
             _logger = logger;
+            _customDataProtector = customDataProtector;
         }
 
+        [Authorize(Policy = "CanRead")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize(Policy = "CanRead")]
         [HttpPost]
         public async Task<IActionResult> GetSales()
         {
@@ -83,16 +92,20 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(int? id)
+        [Authorize(Policy = "CanRead")]
+        public async Task<IActionResult> Details(string id)
         {
             try
             {
-                if (!id.HasValue)
+                if (id == null || id == string.Empty)
                 {
                     return NotFound();
                 }
 
-                var sale = await _saleRepository.GetSaleById(id.Value);
+                var unprotected = _customDataProtector.Unprotect(id);
+                int Id = int.Parse(unprotected);
+
+                var sale = await _saleRepository.GetSaleById(Id);
 
                 if (sale == null)
                 {
@@ -100,6 +113,11 @@ namespace HUECL.alpha._6_0.Controllers
                 }
                 ViewBag.ProductId = new SelectList(await _appDbcontext.Products.ToListAsync(), "Id", "Name");
                 return View(sale);
+            }
+            catch (CryptographicException ex) 
+            {
+                _logger.LogInformation("Error en Cryptografico SalesController/Details: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
             catch (SaleRepositoryCustomException ex)
             {
@@ -114,6 +132,7 @@ namespace HUECL.alpha._6_0.Controllers
 
         }
 
+        //[Authorize(Policy = "CanWrite")]
         public async Task<IActionResult> Create()
         {
             ViewData["CustomerId"] = new SelectList(await _appDbcontext.Customers.ToListAsync(), "Id", "Name");
@@ -121,6 +140,7 @@ namespace HUECL.alpha._6_0.Controllers
             return View();
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Number,Date,Comment,CustomerId, CurrencyId")] Sale sale)
@@ -153,6 +173,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddSaleItem([Bind("Id, CustomerCode, RequestedDelivery, UnitaryPrice, Quantity, ProductId, SaleId")] SaleItem saleItem)
@@ -181,6 +202,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanDelete")]
         [HttpPost]
         public async Task<IActionResult> DeleteSaleItem(int Id)
         {
@@ -204,27 +226,37 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanRead")]
         private bool SaleExists(int id)
         {
             return (_appDbcontext.Sales?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public async Task<IActionResult> Deliveries(int? Id)
+        [Authorize(Policy = "CanRead")]
+        public async Task<IActionResult> Deliveries(string id)
         {
             try
             {
-                if (!Id.HasValue)
+                if (id == null || id == string.Empty)
                 {
                     return NotFound();
                 }
 
-                var _list = await _saleRepository.GetAllSaleDeliveriesBySaleId(Id.Value);
-                var _sale = await _saleRepository.GetSaleById(Id.Value);
+                var unprotected = _customDataProtector.Unprotect(id);
+                int Id = int.Parse(unprotected);
 
-                ViewBag.SaleId = Id.Value;
+                var _list = await _saleRepository.GetAllSaleDeliveriesBySaleId(Id);
+                var _sale = await _saleRepository.GetSaleById(Id);
+
+                ViewBag.SaleId = Id;
                 ViewBag.SaleState = _sale.SaleState;
 
                 return View(_list);
+            }
+            catch (CryptographicException ex)
+            {
+                _logger.LogInformation("Error en Cryptografico SalesController/Details: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
             catch (SaleRepositoryCustomException ex)
             {
@@ -238,6 +270,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddSaleDelivery([Bind("Id, Number, DeliveryDate, Comment, SaleId")] SaleDelivery delivery)
@@ -266,6 +299,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpGet]
         public async Task<IActionResult> AddSaleDeliveryItems(int? SaleDeliveryId)
         {
@@ -299,6 +333,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddSaleDeliveryItems(List<SaleDeliveryItemViewModel> model)
@@ -345,6 +380,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanDelete")]
         [HttpPost]
         public async Task<IActionResult> DeleteSaleDeliveryItem(int Id)
         {

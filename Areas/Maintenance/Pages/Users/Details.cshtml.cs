@@ -1,6 +1,10 @@
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.VariantTypes;
+using DocumentFormat.OpenXml.Wordprocessing;
 using HUECL.alpha._6_0.Areas.Identity.Data;
 using HUECL.alpha._6_0.Areas.Identity.Pages;
 using HUECL.alpha._6_0.Interfaces;
+using HUECL.alpha._6_0.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,11 +36,11 @@ namespace HUECL.alpha._6_0.Areas.Maintenance.Pages.Users
         [BindProperty]
         public InputModel Input { get; set; } = null!;
 
-        public string userId { get; set; } = string.Empty;
         public string userName { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-
+        public SelectList roleList { get; set; } = null!;
+        
         public class InputModel
         {
             [Display(Name = "Permiso Lectura")]
@@ -49,18 +53,21 @@ namespace HUECL.alpha._6_0.Areas.Maintenance.Pages.Users
             public bool CanDelete { get; set; }
 
             [Display(Name = "Rol")]
-            public string roleId { get; set; } = string.Empty ;
-        }
+            public string roleId { get; set; } = string.Empty;
 
-        public SelectList roleList { get; set; } = null!;
+            public string token { get; set; } =string.Empty;
+        }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
             try 
             {
-                userId = _dataProtector.Unprotect(id);
+                Input = new InputModel();
+                Input.token = id;
 
-                var appUser = await _userManager.FindByIdAsync(userId);
+                var unprotectedToken = _dataProtector.Unprotect(id);
+                
+                var appUser = await _userManager.FindByIdAsync(unprotectedToken);
 
                 if (appUser != null) 
                 {
@@ -76,19 +83,23 @@ namespace HUECL.alpha._6_0.Areas.Maintenance.Pages.Users
 
                     IList<Claim> _claims = await _userManager.GetClaimsAsync(appUser);
 
-                    Input = new InputModel();
-
                     var _read = _claims.FirstOrDefault(r => r.Type == GlobalPermissionType.CanRead);
-                    if (_read == null) { Input.CanRead = false; }
-                    else { Input.CanRead = true; }
+                    if (_read != null && _read.Value == "True") 
+                    { Input.CanRead = true; }
+                    else 
+                    { Input.CanRead = false; }
 
                     var _write = _claims.FirstOrDefault(r => r.Type == GlobalPermissionType.CanWrite);
-                    if (_write == null) { Input.CanWrite = false; }
-                    else { Input.CanWrite = true; }
+                    if (_write != null && _write.Value == "True") 
+                    { Input.CanWrite = true; }
+                    else 
+                    { Input.CanWrite = false; }
 
                     var _delete = _claims.FirstOrDefault(r => r.Type == GlobalPermissionType.CanDelete);
-                    if (_delete == null) { Input.CanDelete = false; }
-                    else { Input.CanDelete = true; }
+                    if (_delete != null && _delete.Value == "True") 
+                    { Input.CanDelete = true; }
+                    else 
+                    { Input.CanDelete = false; }
 
                     Input.roleId = role.Id;
 
@@ -104,6 +115,56 @@ namespace HUECL.alpha._6_0.Areas.Maintenance.Pages.Users
             }
         }
 
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null) 
+        {
+            try
+            {
+                returnUrl ??= Url.Content("/Maintenance/Users");
 
+                var userId = _dataProtector.Unprotect(Input.token);
+
+                var detailUser = await _userManager.FindByIdAsync(userId);
+
+                if (detailUser != null) 
+                {
+                    var claimsList = await _userManager.GetClaimsAsync(detailUser);
+                    var removeClaimsResult = await _userManager.RemoveClaimsAsync(detailUser, claimsList);
+                    if(removeClaimsResult.Succeeded) 
+                    {
+                        await _userManager.AddClaimAsync(detailUser, new Claim(GlobalPermissionType.CanRead, Input.CanRead.ToString()));
+                        await _userManager.AddClaimAsync(detailUser, new Claim(GlobalPermissionType.CanWrite, Input.CanWrite.ToString()));
+                        await _userManager.AddClaimAsync(detailUser, new Claim(GlobalPermissionType.CanDelete, Input.CanDelete.ToString()));
+
+                        var roleListUser = await _userManager.GetRolesAsync(detailUser);
+                        var role = await _roleManager.FindByNameAsync(roleListUser.FirstOrDefault());
+                        var remveRoleResult = await _userManager.RemoveFromRoleAsync(detailUser, role.Name);
+                        if (remveRoleResult.Succeeded)
+                        {
+                            var newRole = await _roleManager.FindByIdAsync(Input.roleId);
+                            var newRoleResult = await _userManager.AddToRoleAsync(detailUser, newRole.Name);
+                            if (newRoleResult.Succeeded)
+                            {
+                                return LocalRedirect(returnUrl);
+                            }
+                            else 
+                            { 
+                                return BadRequest("No fue posible editar el Rol del Usuario");
+                            }
+                        }
+                        else 
+                        { 
+                            return BadRequest("No fue posible editar el Rol del Usuario");
+                        }
+                    }
+                    return BadRequest("No fue posible editar los Permisos del Usuario");
+                }
+
+                return BadRequest("No fue posible encontrar el Usuario");
+            }
+            catch (CryptographicException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

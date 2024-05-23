@@ -1,4 +1,12 @@
 ﻿@using HUECL.alpha._6_0.Areas.Identity.Pages.Account;
+@using Microsoft.AspNetCore.Authorization
+
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var isSuperUser = await AuthorizationService.AuthorizeAsync(User, "isSuperUser");
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,8 +48,19 @@
                                 <li><a class="dropdown-item" asp-controller="SaleInvoices" asp-action="Index">Facturas</a></li>
                             </ul>
                         </li>
+                        @if (isSuperUser.Succeeded)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Mantenedores
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Maintenance/Users">Usuarios</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
-                    <partial name="_LoginPartial"/>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -59,7 +78,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/appScript.js" asp-append-version="true"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
     <script src="~/lib/datatables/js/jquery.dataTables.js"></script>

@@ -1,5 +1,10 @@
 ﻿@model SaleDelivery
 
+@using HUECL.alpha._6_0.Interfaces
+
+@inject ICustomDataProtector CustomDataProtector
+
+
 <div class="card mb-3 border-success">
 
     <div class="card-header text-bg-success">
@@ -53,7 +58,10 @@
                     OC Referencia
                 </dt>
                 <dd class="col-sm">
-                    <a href="/Sales/Details?Id=@Model.SaleId">
+                    @{
+                        var protectedId = CustomDataProtector.Protect(Model.SaleId.ToString());
+                    }
+                    <a href="/Sales/Details?Id=@protectedId">
                         @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.Sale.Number)
                     </a>
                 </dd>
@@ -84,3 +92,4 @@
     </div>
 
 </div>
+

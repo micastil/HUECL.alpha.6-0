@@ -72,9 +72,9 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("IsSales", o => o.RequireRole(GlobalRoleName.Sales));
     o.AddPolicy("IsGuest", o => o.RequireRole(GlobalRoleName.Guest));
 
-    o.AddPolicy("CanRead", o => o.RequireClaim(GlobalPermissionType.CanRead, "true"));
-    o.AddPolicy("CanWrite", o => o.RequireClaim(GlobalPermissionType.CanWrite, "true"));
-    o.AddPolicy("CanDelete", o => o.RequireClaim(GlobalPermissionType.CanDelete, "true"));
+    o.AddPolicy("CanRead", o => o.RequireClaim(GlobalPermissionType.CanRead, "True"));
+    o.AddPolicy("CanWrite", o => o.RequireClaim(GlobalPermissionType.CanWrite, "True"));
+    o.AddPolicy("CanDelete", o => o.RequireClaim(GlobalPermissionType.CanDelete, "True"));
 });
 
 builder.Services.Configure<RazorViewEngineOptions>(options =>

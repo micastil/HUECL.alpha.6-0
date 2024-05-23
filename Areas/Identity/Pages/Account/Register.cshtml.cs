@@ -164,9 +164,9 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account
                     await _userManager.AddClaimAsync(user,
                         new Claim(GlobalClaimTypes.Birthdate, Input.BirthDate.ToShortDateString()));
 
-                    if (Input.CanRead) { await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanRead, "true")); }
-                    if (Input.CanWrite) { await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanWrite, "true")); }
-                    if (Input.CanDelete) { await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanDelete, "true")); }
+                    await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanRead, Input.CanRead.ToString()));
+                    await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanWrite, Input.CanWrite.ToString()));
+                    await _userManager.AddClaimAsync(user, new Claim(GlobalPermissionType.CanDelete, Input.CanDelete.ToString()));
 
                     var selectedRoleName = await _roleManager.FindByIdAsync(Input.roleId);
 

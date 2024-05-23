@@ -1,4 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using HUECL.alpha._6_0.Interfaces;
+using HUECL.alpha._6_0.Models.CustomExceptions;
+using HUECL.alpha._6_0.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -8,11 +11,13 @@ namespace HUECL.alpha._6_0.Models.Repositories
     {
         private readonly AppDbContext _appDbContext;
         private readonly ILogger<SaleRepository> _logger;
+        private readonly ICustomDataProtector _customDataProtector;
 
-        public SaleDeliveryRepository(AppDbContext appDbContext, ILogger<SaleRepository> logger)
+        public SaleDeliveryRepository(AppDbContext appDbContext, ILogger<SaleRepository> logger, ICustomDataProtector customDataProtector)
         {
             _appDbContext = appDbContext;
             _logger = logger;
+            _customDataProtector = customDataProtector;
         }
 
         public async Task<int> DeleteSaleDelivery(SaleDelivery saleDelivery)
@@ -111,8 +116,8 @@ namespace HUECL.alpha._6_0.Models.Repositories
             {
                 return await _appDbContext
                     .SaleDeliveries
-                    .Include(s => s.Sale)
-                    .Include(i => i.SaleDeliveryItems)
+                    .Include(s => s.Sale).ThenInclude(c => c.Customer)
+                    .Include(i => i.SaleDeliveryItems).ThenInclude(a => a.SaleItem).ThenInclude(l => l.Product)
                     .Include(p => p.SaleInvoice)
                     .FirstOrDefaultAsync(t => t.Id == Id && t.Active == Active.Active);
             }
@@ -187,6 +192,83 @@ namespace HUECL.alpha._6_0.Models.Repositories
             {
                 _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
                 throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
+        public async Task<DataTablesViewModel<SaleDeliveryViewModel>> GetDataTablesSaleDelivery(string? draw, int skip, int pageSize, string? searchValue, int sortColumnIndex, string? sortColumnName, string? sortDirection, int selectedYear)
+        {
+            try
+            {
+                DataTablesViewModel<SaleDeliveryViewModel> dataTablesResult = new DataTablesViewModel<SaleDeliveryViewModel>();
+
+                var query = _appDbContext.SaleDeliveries.Include(s => s.Sale).ThenInclude(c => c.Customer).AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(searchValue))
+                {
+                    query = query.Where(p =>
+                        (
+                        p.Sale.Customer.Name.Contains(searchValue) ||
+                        p.Number.Contains(searchValue) ||
+                        p.Sale.Number.Contains(searchValue)
+                        )
+                    );
+                }
+
+                dataTablesResult.recordsFiltered = await query.CountAsync();
+
+                switch (sortColumnName)
+                {
+                    case "customer":
+                        query = sortDirection == "asc"
+                            ? query.OrderBy(p => p.Sale.Customer.Name)
+                            : query.OrderByDescending(p => p.Sale.Customer.Name);
+                        break;
+                    case "number":
+                        query = sortDirection == "asc"
+                            ? query.OrderBy(p => p.Number)
+                            : query.OrderByDescending(p => p.Number);
+                        break;
+                    case "date":
+                        query = sortDirection == "asc"
+                            ? query.OrderBy(p => p.DeliveryDate)
+                            : query.OrderByDescending(p => p.DeliveryDate);
+                        break;
+                    case "total":
+                        query = sortDirection == "asc"
+                            ? query.OrderBy(p => p.TotalNet)
+                            : query.OrderByDescending(p => p.TotalNet);
+                        break;
+                }
+
+                dataTablesResult.Data = await query.Where(p => p.Active == Active.Active && p.DeliveryDate.Year == selectedYear)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .Select(p => new SaleDeliveryViewModel
+                    {
+                        Id = _customDataProtector.Protect(p.Id.ToString()),
+                        Customer = p.Sale.Customer.Name,
+                        Number = p.Number,
+                        Date = p.DeliveryDate,
+                        Total = (int)p.TotalNet,
+                        State = p.DeliveryState.ToString(),
+                        SaleNumber = p.Sale.Number,
+                        SaleId = _customDataProtector.Protect(p.Sale.Id.ToString())
+                    })
+                    .ToListAsync();
+
+                dataTablesResult.recordsTotal = await _appDbContext.SaleDeliveries.Where(p => p.Active == Active.Active).CountAsync();
+
+                return dataTablesResult;
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleDeliveryRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleDeliveryRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
             }
         }
     }

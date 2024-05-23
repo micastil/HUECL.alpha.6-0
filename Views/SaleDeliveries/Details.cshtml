@@ -1,0 +1,35 @@
+﻿@model SaleDelivery
+
+@using Microsoft.AspNetCore.Authorization
+
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var CanRead = AuthorizationService.AuthorizeAsync(User, "CanRead");
+    var CanWrite = AuthorizationService.AuthorizeAsync(User, "CanWrite");
+}
+
+@{
+    ViewData["Title"] = "Detalle Despacho";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.DeliveryState == DeliveryState.WithInvoice)
+{
+    <partial name="_SaleDeliveryListWithInvoice" model="Model" />
+}
+else
+{
+    <partial name="_SaleDeliveryListWithOutInvoice" model="Model" />
+}
+
+<partial name="_DeliveriesModal" />
+
+@section scripts
+{
+    <script>
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+    </script>
+}

@@ -1,32 +1,40 @@
-﻿using HUECL.alpha._6_0.Areas.Identity.Data;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using HUECL.alpha._6_0.Areas.Identity.Data;
+using HUECL.alpha._6_0.Interfaces;
 using HUECL.alpha._6_0.Models;
+using HUECL.alpha._6_0.Models.CustomExceptions;
 using HUECL.alpha._6_0.Models.Repositories;
+using HUECL.alpha._6_0.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 
 namespace HUECL.alpha._6_0.Controllers
 {
+    [Authorize]
     public class SaleDeliveriesController : Controller
     {
-        private readonly AppDbContext _appDbcontext;
+        
         private readonly ISaleDeliveryRepository _saleDeliveryRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly ILogger<SalesController> _logger;
+        private readonly ICustomDataProtector _customDataProtector;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public SaleDeliveriesController(
-            AppDbContext appDbcontext, 
             ISaleDeliveryRepository saleDeliveryRepository, 
             ISaleRepository saleRepository, 
             ILogger<SalesController> logger,
+            ICustomDataProtector customDataProtector,
             UserManager<ApplicationUser> userManager
             )
         {
-            _appDbcontext = appDbcontext;
             _saleDeliveryRepository = saleDeliveryRepository;
             _saleRepository = saleRepository;
             _logger = logger;
+            _customDataProtector = customDataProtector;
             _userManager = userManager;
         }
 
@@ -35,6 +43,60 @@ namespace HUECL.alpha._6_0.Controllers
             return View();
         }
 
+        [Authorize(Policy = "CanRead")]
+        [HttpPost]
+        public async Task<IActionResult> GetSaleDeliveries() 
+        {
+            try
+            {
+                var _draw = Request.Form["draw"].FirstOrDefault();
+                var _start = Request.Form["start"].FirstOrDefault();
+                var _length = Request.Form["length"].FirstOrDefault();
+                var _searchValue = Request.Form["search[value]"].FirstOrDefault();
+                var _selectedYear = int.Parse(Request.Form["currentYear"].FirstOrDefault());
+
+                if (!int.TryParse(_start, out int _skip))
+                    return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+                if (!int.TryParse(_length, out int _pageSize))
+                    return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+
+                // Sort the data based on the selected column and direction
+                var _sortColumnIndex = int.Parse(Request.Form["order[0][column]"].FirstOrDefault());
+                var _sortColumnName = Request.Form[$"columns[{_sortColumnIndex}][data]"].FirstOrDefault();
+                var _sortDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+
+                DataTablesViewModel<SaleDeliveryViewModel> result = await _saleDeliveryRepository.GetDataTablesSaleDelivery(
+                    _draw,
+                    _skip,
+                    _pageSize,
+                    _searchValue,
+                    _sortColumnIndex,
+                    _sortColumnName,
+                    _sortDirection,
+                    _selectedYear
+                    );
+
+                return Json(new
+                {
+                    draw = _draw,
+                    recordsFiltered = result.recordsFiltered,
+                    recordsTotal = result.recordsTotal,
+                    data = result.Data
+                });
+            }
+            catch (SaleDeliveryRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error en SalesController/Index: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error en SalesController/Index: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [Authorize(Policy = "CanDelete")]
         [HttpPost]
         public async Task<IActionResult> DeleteSaleDeliveryItem(int Id)
         {
@@ -69,6 +131,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanDelete")]
         [HttpPost]
         public async Task<IActionResult> DeleteSaleDelivery(int Id)
         {
@@ -108,6 +171,40 @@ namespace HUECL.alpha._6_0.Controllers
             catch (Exception ex)
             {
                 _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        public async Task<IActionResult> Details(string Id)
+        {
+            try 
+            {
+                if (Id == null || Id == string.Empty)
+                {
+                    return NotFound();
+                }
+
+                int unprotected = int.Parse(_customDataProtector.Unprotect(Id));
+
+                var result = await _saleDeliveryRepository.GetSaleDeliveryById(unprotected);
+                
+                if (result == null) { return NotFound(); }
+
+                return View(result);
+            }
+            catch (CryptographicException ex)
+            {
+                _logger.LogInformation("Error en Cryptografico SalesController/Details: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (SaleDeliveryRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error en SalesController/Index: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error en SalesController/Index: {mensaje}", ex.Message);
                 return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
         }
