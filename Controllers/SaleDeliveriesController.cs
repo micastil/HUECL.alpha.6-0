@@ -38,6 +38,8 @@ namespace HUECL.alpha._6_0.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Policy = "CanRead")]
+        [HttpGet]
         public IActionResult Index() 
         {
             return View();
@@ -175,6 +177,8 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanRead")]
+        [HttpGet]
         public async Task<IActionResult> Details(string Id)
         {
             try 

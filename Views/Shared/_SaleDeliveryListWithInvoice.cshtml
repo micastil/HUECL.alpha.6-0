@@ -71,7 +71,10 @@
                         Factura Referencia
                     </dt>
                     <dd class="col-sm">
-                        <a href="#" role="button" data-invoiceId="@Model.SaleInvoice.Id">
+                        @{
+                            var protectedInvoiceId = CustomDataProtector.Protect(Model.SaleInvoice.Id.ToString());
+                        }
+                        <a href="#" role="button" data-invoiceId="@protectedInvoiceId">
                             @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.SaleInvoice.Number)
                         </a>
                     </dd>

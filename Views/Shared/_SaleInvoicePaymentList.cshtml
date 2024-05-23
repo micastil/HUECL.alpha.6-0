@@ -1,5 +1,15 @@
 ﻿@model IEnumerable<SaleInvoicePayment>
 
+@using HUECL.alpha._6_0.Interfaces
+@using Microsoft.AspNetCore.Authorization
+
+@inject ICustomDataProtector CustomDataProtector
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var deletePermission = await AuthorizationService.AuthorizeAsync(User, "CanDelete");
+}
+
 <table class="table table-responsive table-hover table-sm" id="paymentsTable">
     <thead>
         <tr>
@@ -30,9 +40,12 @@
                     @Html.DisplayFor(modelItem => item.Comment)
                 </td>
                 <td>
-                    <button class="btn btn-link" type="button" data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" >
-                        <i class="bi-trash"></i>
-                    </button>
+                    @if (deletePermission.Succeeded)
+                    {
+                        <button class="btn btn-link" type="button" data-paymentdelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar">
+                            <i class="bi-trash"></i>
+                        </button>
+                    }
                 </td>
             </tr>
         }

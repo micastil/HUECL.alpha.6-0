@@ -1,5 +1,15 @@
 ﻿@model SaleInvoice 
 
+@using HUECL.alpha._6_0.Interfaces
+@using Microsoft.AspNetCore.Authorization
+
+@inject ICustomDataProtector CustomDataProtector
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var writePermission = await AuthorizationService.AuthorizeAsync(User, "CanWrite");
+}
+
 <div id="invoicePaymentsContainer">
     @if (Model.SaleInvoicePayments != null && Model.SaleInvoicePayments.Count() > 0)
     {
@@ -51,8 +61,10 @@
         </div>
     </dl>
 </dl>
-
-<button class="btn btn-primary btn-sm mb-3" id="addInvoicePayment" data-id="@Model.Id">Agregar Pago</button>
+@if (writePermission.Succeeded)
+{
+    <button class="btn btn-primary btn-sm mb-3" id="addInvoicePayment" data-id="@Model.Id">Agregar Pago</button>
+}
 
 @section Scripts
 {

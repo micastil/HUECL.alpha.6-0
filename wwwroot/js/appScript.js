@@ -2,11 +2,21 @@
 var deliveryToDelete;
 var paymentToDelete;
 var rowToDelete;
+var currentYear = (new Date).getFullYear();
 
 $(function () {
 
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+    var selectedYear = localStorage.getItem('selectedYear');
+
+    if (selectedYear) {
+        $("#yearFilter").val(selectedYear)
+    }
+    else {
+        $("#yearFilter").val(currentYear)
+    }
 
     $("#btnSaleDelivery").on('click', function () {
 
@@ -216,6 +226,8 @@ $(function () {
     $(document).on('click', 'a[data-invoiceId]', function (event) {
         event.preventDefault();
         var _data = $(this).attr('data-invoiceId');
+
+        console.log(_data);
 
         var loading = '<div class="d-flex align - items - center"><strong role="status">Cargando información ...</strong><div class="spinner-border ms-auto text-success" aria-hidden="true"></div></div>';
         $('#_containerSaleInvoice').html(loading);

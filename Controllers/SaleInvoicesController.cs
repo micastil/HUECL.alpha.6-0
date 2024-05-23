@@ -1,11 +1,15 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using HUECL.alpha._6_0.Interfaces;
 using HUECL.alpha._6_0.Models;
 using HUECL.alpha._6_0.Models.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace HUECL.alpha._6_0.Controllers
 {
+    [Authorize]
     public class SaleInvoicesController : Controller
     {
 
@@ -14,21 +18,24 @@ namespace HUECL.alpha._6_0.Controllers
         private readonly ISaleDeliveryRepository _saleDeliveryRepository;
         private readonly ISaleInvoiceRepository _saleInvoiceRepository;
         private readonly ILogger<SalesController> _logger;
+        private readonly ICustomDataProtector _customDataProtector;
 
         public SaleInvoicesController(AppDbContext appDbcontext,
             ILogger<SalesController> logger,
             ISaleRepository saleRepository,
             ISaleDeliveryRepository saleDeliveryRepository,
+            ICustomDataProtector customDataProtector,
             ISaleInvoiceRepository saleInvoiceRepository)
         {
             _appDbcontext = appDbcontext;
             _logger = logger;
-
+            _customDataProtector = customDataProtector;
             _saleRepository = saleRepository;
             _saleDeliveryRepository = saleDeliveryRepository;
             _saleInvoiceRepository = saleInvoiceRepository;
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpGet]
         public async Task<IActionResult> AddSaleInvoicePayment(int Id)
         {
@@ -58,6 +65,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpPost]
         public async Task<IActionResult> AddSaleInvoicePayment(SaleInvoicePayment saleInvoicePayment)
         {
@@ -123,6 +131,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpGet]
         public async Task<IActionResult> AddSaleInvoice(int Id)
         {
@@ -163,6 +172,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanWrite")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddSaleInvoice([Bind("Number, Date, PaymentDate, Comment, SaleDeliveryId")] SaleInvoice model)
@@ -210,7 +220,8 @@ namespace HUECL.alpha._6_0.Controllers
                 return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
         }
-        
+
+        [Authorize(Policy = "CanDelete")]
         [HttpPost]
         public async Task<IActionResult> DeletePayment(int Id)
         {
@@ -240,18 +251,31 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanRead")]
         [HttpGet]
-        public async Task<IActionResult> Detail(int Id)
+        public async Task<IActionResult> Detail(string Id)
         {
             try
             {
-                if (await _saleInvoiceRepository.SaleInvoiceExistis(Id))
+                if (Id == null || Id == string.Empty)
                 {
-                    var _result = await _saleInvoiceRepository.GetSaleInvoiceById(Id);
+                    return NotFound();
+                }
+
+                int unprotectedId = int.Parse(_customDataProtector.Unprotect(Id));
+
+                if (await _saleInvoiceRepository.SaleInvoiceExistis(unprotectedId))
+                {
+                    var _result = await _saleInvoiceRepository.GetSaleInvoiceById(unprotectedId);
                     if (_result == null) { return NotFound(); }
                     return PartialView("_SaleInvoiceDetail", _result);
                 }
                 return NotFound();
+            }
+            catch (CryptographicException ex)
+            {
+                _logger.LogInformation("Error en Cryptografico SalesController/Details: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
             catch (SaleRepositoryCustomException ex)
             {
@@ -265,6 +289,7 @@ namespace HUECL.alpha._6_0.Controllers
             }
         }
 
+        [Authorize(Policy = "CanRead")]
         [HttpGet]
         public async Task<IActionResult> GetAllSaleInvoicePayments(int Id)
         {

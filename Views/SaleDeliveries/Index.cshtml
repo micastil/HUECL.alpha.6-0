@@ -1,7 +1,7 @@
-﻿@* @{
+﻿@{
     ViewData["Title"] = "Lista Despachos";
     Layout = "~/Views/Shared/_Layout.cshtml";
-} *@
+}
 
 <div class="col-sm-3">
     <div class="form-floating mb-3">
@@ -46,17 +46,7 @@
 
         $(document).ready(function () {
 
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
-            var selectedYear = localStorage.getItem('selectedYear');
-
-            if (selectedYear) {
-                $("#yearFilter").val(selectedYear)
-            }
-            else {
-                $("#yearFilter").val(currentYear)
-            }
+            
 
             var deliveriesDataTable = $('#deliveriesTable').DataTable({
                 language: {
