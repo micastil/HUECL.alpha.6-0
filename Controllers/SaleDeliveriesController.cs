@@ -212,5 +212,135 @@ namespace HUECL.alpha._6_0.Controllers
                 return StatusCode(500, "Ha ocurrido un error en la aplicacion");
             }
         }
+
+        [Authorize(Policy = "CanWrite")]
+        [HttpGet]
+        public async Task<IActionResult> AddSaleDeliveryItems(int? SaleDeliveryId)
+        {
+            try
+            {
+                if (!SaleDeliveryId.HasValue)
+                {
+                    return NotFound();
+                }
+
+                SaleDelivery _delivery = await _saleRepository.GetSaleDeliveryById(SaleDeliveryId.Value);
+
+                if (_delivery == null) { return NotFound(); }
+
+                if (_delivery.Sale.SaleItems == null)
+                {
+                    return NotFound();
+                }
+
+                return PartialView("_SaleDeliveryItemsCreate", await _saleRepository.GetItemsAvailableForDelivery(_delivery.SaleId, SaleDeliveryId.Value));
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error en SalesController/Details: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error en SalesController/Details: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [Authorize(Policy = "CanWrite")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSaleDeliveryItems(List<SaleDeliveryItemViewModel> model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (await _saleRepository.AddSaleDeliveryItems(model) > 0)
+                    {
+                        var first = model.FirstOrDefault();
+
+                        if (first != null)
+                        {
+                            int saleDeliveryId = first.SaleDeliveryId;
+
+                            SaleDelivery delivery = await _saleRepository.GetSaleDeliveryById(saleDeliveryId);
+
+                            var _resultModel = await _saleRepository.GetAllSaleDeliveriesBySaleId(delivery.SaleId);
+                            var _resultStatus = "";
+
+                            if (delivery.Sale.SaleState == SaleState.CompleteDelivery)
+                            {
+                                _resultStatus = "CompleteDelivery";
+                            }
+
+                            var partialViewString = await this.RenderViewToStringAsync("_SaleDeliveryList", _resultModel);
+
+                            return new JsonResult(new { Status = _resultStatus, PartialView = partialViewString });
+                        }
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [Authorize(Policy = "CanWrite")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSaleDeliveryItemsOnDetails(List<SaleDeliveryItemViewModel> model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (await _saleRepository.AddSaleDeliveryItems(model) > 0)
+                    {
+                        var first = model.FirstOrDefault();
+
+                        if (first != null)
+                        {
+                            int saleDeliveryId = first.SaleDeliveryId;
+
+                            SaleDelivery delivery = await _saleRepository.GetSaleDeliveryById(saleDeliveryId);
+
+                            var _resultModel = await _saleRepository.GetAllSaleDeliveriesBySaleId(delivery.SaleId);
+                            var _resultStatus = "";
+
+                            if (delivery.Sale.SaleState == SaleState.CompleteDelivery)
+                            {
+                                _resultStatus = "CompleteDelivery";
+                            }
+
+                            var partialViewString = await this.RenderViewToStringAsync("_SaleDeliveryList", _resultModel);
+
+                            return new JsonResult(new { Status = _resultStatus, PartialView = partialViewString });
+                        }
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
     }
 }

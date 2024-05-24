@@ -1,5 +1,15 @@
 ﻿@model IEnumerable<SaleDeliveryItem>
 
+@using HUECL.alpha._6_0.Interfaces
+@using Microsoft.AspNetCore.Authorization
+
+@inject ICustomDataProtector CustomDataProtector
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var deletePermission = await AuthorizationService.AuthorizeAsync(User, "CanDelete");
+}
+
 <table class="table table-responsive table-hover table-sm">
     <thead>
         <tr>
@@ -37,9 +47,12 @@
                 @if(@item.SaleDelivery.DeliveryState != @DeliveryState.WithInvoice)
                 {
                     <td>
-                        <a data-idtodelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
-                            <i class="bi-trash" style="vertical-align: middle;"></i>
-                        </a>
+                        @if (deletePermission.Succeeded)
+                        {
+                            <a data-idtodelete=@item.Id data-bs-toggle="tooltip" data-bs-title="Eliminar" href="#">
+                                <i class="bi-trash" style="vertical-align: middle;"></i>
+                            </a>
+                        }
                     </td>
                 }
             </tr>

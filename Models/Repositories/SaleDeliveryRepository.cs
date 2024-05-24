@@ -271,5 +271,26 @@ namespace HUECL.alpha._6_0.Models.Repositories
                 throw new SaleDeliveryRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
             }
         }
+
+        public async Task<IEnumerable<SaleDeliveryItem>> GetSaleDeliveryItemsById(int Id)
+        {
+            try 
+            { 
+                return await _appDbContext.SaleDeliveryItems.Where(a => a.SaleDeliveryId == Id && a.Active == Active.Active)
+                    .Include(s => s.SaleDelivery)
+                    .Include(i => i.SaleItem)
+                    .ToListAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
     }
 }

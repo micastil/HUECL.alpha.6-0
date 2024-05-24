@@ -4,6 +4,51 @@ var paymentToDelete;
 var rowToDelete;
 var currentYear = (new Date).getFullYear();
 
+function isNumber(value) {
+    return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
+function validateQuantity(input) {
+
+    var max = parseInt(input.getAttribute('data-max'));
+
+    var min = parseInt(input.getAttribute('data-min'));
+
+    var value = parseInt(input.value);
+
+    var validationMessage = '';
+
+    if (value > max) {
+        validationMessage = 'Cantidad no puede ser mayor a: ' + max;
+    }
+    if (value < min) {
+        validationMessage = 'Cantidad no puede ser menor a: ' + min;
+    }
+    if (!isNumber(value)) {
+        validationMessage = 'Debe ingresar un numero valido';
+    }
+    // Find the closest container div that wraps the input and related elements
+    var containerDiv = input.closest('div');
+
+    // Find the validation span within the container div
+    var validationSpan = containerDiv.querySelector('span.text-danger');
+
+    if (validationSpan) {
+        validationSpan.textContent = validationMessage;
+
+        // Ensure the validation span visibility matches the validation state
+        validationSpan.style.display = validationMessage ? 'block' : 'none';
+    }
+
+    if (validationMessage) {
+        // Optionally, you can disable the submit button or take other actions
+        document.getElementById('btnAddSaleDeliveryItem').disabled = true;
+    } else {
+        // If there is no validation error, enable the submit button
+        document.getElementById('btnAddSaleDeliveryItem').disabled = false;
+    }
+}
+
 $(function () {
 
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -74,7 +119,7 @@ $(function () {
         };
 
         $.ajax({
-            url: '/Sales/AddSaleDeliveryItems',
+            url: '/SaleDeliveries/AddSaleDeliveryItems',
             type: 'GET',
             data: data,
             success: function (data) {
@@ -100,14 +145,16 @@ $(function () {
     });
 
     $(document).on('click', '#btnAddSaleDeliveryItem', function () {
-        if ($('#frmAddSaleDeliveryItem').valid()) {
+        //if ($('#frmAddSaleDeliveryItem').valid()) {
+        //}
 
+        if ($('#deliveryContainer').length) {
             var loadingIndicator = $('#loadingIndicator');
             loadingIndicator.show();
 
             $.ajax
                 ({
-                    url: '/Sales/AddSaleDeliveryItems',
+                    url: '/SaleDeliveries/AddSaleDeliveryItems',
                     type: 'POST',
                     data: $("#frmAddSaleDeliveryItem").serialize(),
                     success: function (data) {
@@ -131,6 +178,36 @@ $(function () {
                     },
                     complete: function () {
                         loadingIndicator.hide();
+                        $('#frmAddSaleDeliveryItem').trigger('reset');
+                    }
+                });
+        }
+        else
+        {
+            $.ajax
+                ({
+                    url: '/SaleDeliveries/AddSaleDeliveryItemsOnDetails',
+                    type: 'POST',
+                    data: $("#frmAddSaleDeliveryItem").serialize(),
+                    success: function (data) {
+
+                        var status = data.status;
+                        var partialView = data.partialView;
+
+                        $("#modalAddSaleDeliveryItem").modal('hide');
+
+                        $('#deliveryContainer').fadeIn(500, function () {
+                            $(this).html(partialView);
+                        });
+
+                        if (status === 'CompleteDelivery') {
+                            $("#addDeliveryItem").prop('disabled', true);
+                        }
+                    },
+                    error: function () {
+                        console.log('ha ocurrido un error en la aplicacion');
+                    },
+                    complete: function () {
                         $('#frmAddSaleDeliveryItem').trigger('reset');
                     }
                 });
@@ -315,38 +392,40 @@ $(function () {
             type: 'POST',
             data: { Id: deliveryToDelete },
             success: function (data) {
+                if ($('#deliveryContainer').length) {
+                    var status = data.status;
 
+                    var buttonHTML = '<button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>';
+                    var containerHTML = '<div class="bd-callout bd-callout-warning"><strong>No existen Despachos para esta Venta en la base de datos</strong></div>';
 
+                    $('#' + deliveryToDelete).fadeOut(800, function () {
+                        $(this).remove();
 
-                var status = data.status;
+                        var remainingElements = $('#deliveryContainer').children().filter(function () {
+                            return this.nodeType === 1;
+                        });
 
-                var buttonHTML = '<button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>';
-                var containerHTML = '<div class="bd-callout bd-callout-warning"><strong>No existen Despachos para esta Venta en la base de datos</strong></div>';
-
-                $('#' + deliveryToDelete).fadeOut(800, function () {
-                    $(this).remove();
-
-                    var remainingElements = $('#deliveryContainer').children().filter(function () {
-                        return this.nodeType === 1;
+                        if (remainingElements.length === 0) {
+                            $('#deliveryContainer').html(containerHTML);
+                            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+                        }
                     });
 
-                    if (remainingElements.length === 0) {
-                        $('#deliveryContainer').html(containerHTML);
-                        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-                        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+                    $("#confDeleteDelivery").modal('hide');
+
+                    if (status === '1') {
+                        if ($("#addDelivery").length === 0) {
+                            $('#btnAddDeliveryContainer').html(buttonHTML);
+                        }
+
+                        $("#addDelivery").prop('disabled', false);
                     }
-                });
-
-                $("#confDeleteDelivery").modal('hide');
-
-                if (status === '1') {
-                    if ($("#addDelivery").length === 0) {
-                        $('#btnAddDeliveryContainer').html(buttonHTML);
-                    }
-
-                    $("#addDelivery").prop('disabled', false);
                 }
-
+                else
+                {
+                    window.location.href = '/SaleDeliveries';
+                }
             },
             error: function (xhr, status, error) {
                 $("#confDeleteDelivery").modal('hide');
@@ -552,48 +631,4 @@ $(function () {
     });
     /***************************************************************************/
 
-    function isNumber(value) {
-        return !isNaN(parseFloat(value)) && isFinite(value);
-    }
-
-    function validateQuantity(input) {
-
-        var max = parseInt(input.getAttribute('data-max'));
-
-        var min = parseInt(input.getAttribute('data-min'));
-
-        var value = parseInt(input.value);
-
-        var validationMessage = '';
-
-        if (value > max) {
-            validationMessage = 'Cantidad no puede ser mayor a: ' + max;
-        }
-        if (value < min) {
-            validationMessage = 'Cantidad no puede ser menor a: ' + min;
-        }
-        if (!isNumber(value)) {
-            validationMessage = 'Debe ingresar un numero valido';
-        }
-        // Find the closest container div that wraps the input and related elements
-        var containerDiv = input.closest('div');
-
-        // Find the validation span within the container div
-        var validationSpan = containerDiv.querySelector('span.text-danger');
-
-        if (validationSpan) {
-            validationSpan.textContent = validationMessage;
-
-            // Ensure the validation span visibility matches the validation state
-            validationSpan.style.display = validationMessage ? 'block' : 'none';
-        }
-
-        if (validationMessage) {
-            // Optionally, you can disable the submit button or take other actions
-            document.getElementById('btnAddSaleDeliveryItem').disabled = true;
-        } else {
-            // If there is no validation error, enable the submit button
-            document.getElementById('btnAddSaleDeliveryItem').disabled = false;
-        }
-    }
 });

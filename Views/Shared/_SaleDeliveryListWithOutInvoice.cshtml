@@ -1,12 +1,26 @@
 ﻿@model SaleDelivery
 
+@using HUECL.alpha._6_0.Interfaces
+@using Microsoft.AspNetCore.Authorization
+
+@inject ICustomDataProtector CustomDataProtector
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var writePermission = await AuthorizationService.AuthorizeAsync(User, "CanWrite");
+    var deletePermission = await AuthorizationService.AuthorizeAsync(User, "CanDelete");
+}
+
 <div class="card mb-3 border-warning" id="@Model.Id">
 
     <h4 class="card-header text-bg-warning d-flex justify-content-between align-items-center">
         @Model.Number | @Model.DeliveryDate.ToShortDateString()
-        <button data-deliverydelete=@Model.Id type ="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar Despacho">
-            <i class="bi-trash" style="vertical-align: middle;"></i>
-        </button>
+        @if (deletePermission.Succeeded)
+        {
+            <button data-deliverydelete=@Model.Id type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar Despacho">
+                <i class="bi-trash" style="vertical-align: middle;"></i>
+            </button>
+        }
     </h4>
 
     <div class="card-body">
@@ -74,12 +88,12 @@
             </div>
         </dl>
 
-        @if (Model.Sale.SaleState != SaleState.CompleteDelivery)
+        @if (Model.Sale.SaleState != SaleState.CompleteDelivery && writePermission.Succeeded)
         {
             <button class="btn btn-secondary btn-sm mb-3" id="addDeliveryItem" data-id="@Model.Id">Agregar Item</button>
         }
 
-        @if (Model.DeliveryState == DeliveryState.WithItems)
+        @if (Model.DeliveryState == DeliveryState.WithItems && writePermission.Succeeded)
         {
             <button class="btn btn-warning btn-sm mb-3" id="addSaleInvoice" data-id="@Model.Id">Facturar Despacho</button>
         }
