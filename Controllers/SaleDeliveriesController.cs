@@ -135,6 +135,45 @@ namespace HUECL.alpha._6_0.Controllers
 
         [Authorize(Policy = "CanDelete")]
         [HttpPost]
+        public async Task<IActionResult> DeleteSaleDeliveryItemOnDetails(int Id)
+        {
+            try
+            {
+                var deliveryItem = await _saleDeliveryRepository.GetSaleDeliveryItemById(Id);
+
+                if (deliveryItem != null)
+                {
+                    if (await _saleDeliveryRepository.DeleteSaleDeliveryItemById(deliveryItem.Id) > 0)
+                    {
+                        var delivery = await _saleDeliveryRepository.GetSaleDeliveryById(deliveryItem.SaleDeliveryId);
+
+                        if(delivery != null) 
+                        {
+                            var partialViewString = await this.RenderViewToStringAsync("_SaleDeliveryListWithOutInvoice", delivery);
+
+                            return new JsonResult(new { Status = "1", PartialView = partialViewString });
+                        }
+
+                        return NotFound();
+                    }
+                }
+
+                return StatusCode(500, new { status = "error", message = "Unable to delete item." });
+            }
+            catch (SaleRepositoryCustomException ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error al ingresar Item Despacho de Venta: {mensaje}", ex.Message);
+                return StatusCode(500, "Ha ocurrido un error en la aplicacion");
+            }
+        }
+
+        [Authorize(Policy = "CanDelete")]
+        [HttpPost]
         public async Task<IActionResult> DeleteSaleDelivery(int Id)
         {
             try 
@@ -314,7 +353,7 @@ namespace HUECL.alpha._6_0.Controllers
 
                             SaleDelivery delivery = await _saleRepository.GetSaleDeliveryById(saleDeliveryId);
 
-                            var _resultModel = await _saleRepository.GetAllSaleDeliveriesBySaleId(delivery.SaleId);
+                            //var _resultModel = await _saleDeliveryRepository.GetSaleDeliveryItemsById(saleDeliveryId);
                             var _resultStatus = "";
 
                             if (delivery.Sale.SaleState == SaleState.CompleteDelivery)
@@ -322,7 +361,7 @@ namespace HUECL.alpha._6_0.Controllers
                                 _resultStatus = "CompleteDelivery";
                             }
 
-                            var partialViewString = await this.RenderViewToStringAsync("_SaleDeliveryList", _resultModel);
+                            var partialViewString = await this.RenderViewToStringAsync("_SaleDeliveryListWithOutInvoice", delivery);
 
                             return new JsonResult(new { Status = _resultStatus, PartialView = partialViewString });
                         }

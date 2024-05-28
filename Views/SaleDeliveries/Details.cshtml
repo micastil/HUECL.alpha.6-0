@@ -14,14 +14,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (Model.DeliveryState == DeliveryState.WithInvoice)
-{
-    <partial name="_SaleDeliveryListWithInvoice" model="Model" />
-}
-else
-{
-    <partial name="_SaleDeliveryListWithOutInvoice" model="Model" />
-}
+<div id="containerDeliveryDetail">
+    @if (Model.DeliveryState == DeliveryState.WithInvoice)
+    {
+        <partial name="_SaleDeliveryListWithInvoice" model="Model" />
+    }
+    else
+    {
+        <partial name="_SaleDeliveryListWithOutInvoice" model="Model" />
+    }
+</div>
 
 <partial name="_DeliveriesModal" />
 

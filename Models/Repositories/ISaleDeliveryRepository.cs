@@ -9,6 +9,9 @@ namespace HUECL.alpha._6_0.Models.Repositories
         Task<int> DeleteSaleDeliveryItemById(int Id);
         Task<int> DeleteSaleDelivery(SaleDelivery saleDelivery);
         Task<SaleDelivery?> GetSaleDeliveryById(int Id);
+
+        Task<SaleDeliveryItem?> GetSaleDeliveryItemById(int Id);
+
         Task<IEnumerable<SaleDelivery>> GetAllSaleDeliveriesBySaleId(int SaleId);
 
         Task<IEnumerable<SaleDeliveryItem>> GetSaleDeliveryItemsById(int Id);

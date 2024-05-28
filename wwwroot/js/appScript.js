@@ -49,6 +49,10 @@ function validateQuantity(input) {
     }
 }
 
+function getAntiForgeryToken() {
+    return $('input[name="__RequestVerificationToken"]').val();
+}
+
 $(function () {
 
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -107,10 +111,6 @@ $(function () {
         }
     });
 
-    function getAntiForgeryToken() {
-        return $('input[name="__RequestVerificationToken"]').val();
-    }
-
     $(document).on('click', '#addDeliveryItem', function () {
         var _saleDeliveryId = $(this).data('id');
 
@@ -134,7 +134,8 @@ $(function () {
         });
     });
 
-    $(document).on('click', 'a[data-idtodelete]', function () {
+    $(document).on('click', 'a[data-idtodelete]', function (event) {
+        event.preventDefault();
         dataIdToDelete = $(this).attr('data-idtodelete');
         $("#confirmationModal").modal('show');
     });
@@ -145,10 +146,8 @@ $(function () {
     });
 
     $(document).on('click', '#btnAddSaleDeliveryItem', function () {
-        //if ($('#frmAddSaleDeliveryItem').valid()) {
-        //}
-
         if ($('#deliveryContainer').length) {
+
             var loadingIndicator = $('#loadingIndicator');
             loadingIndicator.show();
 
@@ -184,6 +183,8 @@ $(function () {
         }
         else
         {
+            $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
+
             $.ajax
                 ({
                     url: '/SaleDeliveries/AddSaleDeliveryItemsOnDetails',
@@ -196,7 +197,7 @@ $(function () {
 
                         $("#modalAddSaleDeliveryItem").modal('hide');
 
-                        $('#deliveryContainer').fadeIn(500, function () {
+                        $('#containerDeliveryDetail').fadeIn(500, function () {
                             $(this).html(partialView);
                         });
 
@@ -358,35 +359,82 @@ $(function () {
     });
 
     $('#confDeleteDeliveryItem').on('click', function () {
+        $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
 
-        $.ajax({
-            url: '/SaleDeliveries/DeleteSaleDeliveryItem',
-            type: 'POST',
-            data: { Id: dataIdToDelete },
-            success: function (data) {
+        if ($('#deliveryContainer').length) {
+            $.ajax({
+                url: '/SaleDeliveries/DeleteSaleDeliveryItem',
+                type: 'POST',
+                data: { Id: dataIdToDelete },
+                success: function (data) {
 
-                var status = data.status;
-                var partialView = data.partialView;
+                    var status = data.status;
+                    var partialView = data.partialView;
 
-                $("#confirmationModal").modal('hide');
-                $('#deliveryContainer').html(partialView);
-                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+                    $("#confirmationModal").modal('hide');
+                    $('#deliveryContainer').html(partialView);
+                    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
-                if (status === 'CompleteDelivery') {
-                    $("#addDelivery").prop('disabled', true);
+                    if (status === 'CompleteDelivery') {
+                        $("#addDelivery").prop('disabled', true);
+                    }
+                    else {
+                        $("#addDelivery").prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    console.log('ha ocurrido un error en la aplicacion');
+                },
+                complete: function ()
+                {
+                    $('#confDeleteDeliveryItem').html('Eliminar');
                 }
-                else {
-                    $("#addDelivery").prop('disabled', false);
-                }
-            },
-            error: function () {
-                console.log('ha ocurrido un error en la aplicacion');
-            }
-        });
+            });
+        }
+        else
+        {
+            console.log('else');
+            $.ajax
+                ({
+                    url: '/SaleDeliveries/DeleteSaleDeliveryItemOnDetails',
+                    type: 'POST',
+                    data: { Id: dataIdToDelete },
+                    success: function (data) {
+
+                        var status = data.status;
+                        var partialView = data.partialView;
+                        
+                        $("#confirmationModal").modal('hide');
+
+                        $('#containerDeliveryDetail').fadeIn(500, function () {
+                            $(this).html(partialView);
+                        });
+                        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+                        
+                    },
+                    error: function () {
+                        console.log('ha ocurrido un error en la aplicacion');
+                    },
+                    complete: function () {
+                        $('#confDeleteDeliveryItem').html('Eliminar');
+                        //$('#frmAddSaleDeliveryItem').trigger('reset');
+                    }
+                });
+        }
+
+        
+    });
+
+    $('#modalAddSaleDeliveryItem').on('hidden.bs.modal', function () {
+        $('#btnAddSaleDeliveryItem').html('Agregar Item Despacho');
     });
 
     $('#btnDeleteDelivery').on('click', function () {
+        $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
+
         $.ajax({
             url: '/SaleDeliveries/DeleteSaleDelivery',
             type: 'POST',
@@ -447,6 +495,7 @@ $(function () {
     });
 
     $("#confDeleteDelivery").on('hidden.bs.modal', function () {
+        $('#btnDeleteDelivery').html('Eliminar');
         deliveryToDelete = undefined;
     });
 
@@ -564,37 +613,6 @@ $(function () {
                     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
                     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
                 }
-
-                // var status = data.status;
-
-                // var buttonHTML = '<button class="btn btn-primary btn-sm mb-3" id="addDelivery" data-bs-toggle="modal" data-bs-target="#modalAddSaleDelivery">Agregar Despacho</button>';
-                // var containerHTML = '<div class="bd-callout bd-callout-warning"><strong>No existen Despachos para esta Venta en la base de datos</strong></div>';
-
-                // $('#' + deliveryToDelete).fadeOut(800, function () {
-                //     $(this).remove();
-
-                //     var remainingElements = $('#deliveryContainer').children().filter(function () {
-                //         return this.nodeType === 1;
-                //     });
-
-                //     if (remainingElements.length === 0) {
-                //         $('#deliveryContainer').html(containerHTML);
-                //         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-                //         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-                //     }
-                // });
-
-                // $("#confDeleteDelivery").modal('hide');
-
-                // if (status === '1') {
-                //     if ($("#addDelivery").length === 0) {
-                //         $('#btnAddDeliveryContainer').html(buttonHTML);
-                //     }
-
-                //     $("#addDelivery").prop('disabled', false);
-                // }
-
-
             },
             error: function (xhr, status, error) {
                 console.log(xhr);

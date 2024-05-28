@@ -37,32 +37,9 @@
             }
         </div>
 
-        <dl class="row">
-            <div class="col-4">
-                <dt class="col-sm">
-                    @Html.DisplayNameFor(model => model.TotalNet)
-                </dt>
-                <dd class="col-sm">
-                    @Html.DisplayFor(modelItem => Model.TotalNet)
-                </dd>
-            </div>
-            <div class="col-4">
-                <dt class="col-sm">
-                    @Html.DisplayNameFor(model => model.TotalTax)
-                </dt>
-                <dd class="col-sm">
-                    @Html.DisplayFor(modelItem => Model.TotalTax)
-                </dd>
-            </div>
-            <div class="col-4">
-                <dt class="col-sm">
-                    @Html.DisplayNameFor(model => model.TotalDelivery)
-                </dt>
-                <dd class="col-sm">
-                    @Html.DisplayFor(modelItem => Model.TotalDelivery)
-                </dd>
-            </div>
-        </dl>
+        <div id="delieryTotalSummary">
+            <partial name="_SaleDeliveryListTotalSummary" model="Model" />
+        </div>
 
         <dl class="row">
             <div class="col">
@@ -70,7 +47,10 @@
                     OC Referencia
                 </dt>
                 <dd class="col-sm-10">
-                    <a href="/Sales/Details?Id=@Model.SaleId">
+                    @{
+                        var protectedSaleId = CustomDataProtector.Protect(Model.SaleId.ToString());
+                    }
+                    <a href="/Sales/Details?Id=@protectedSaleId">
                         @Html.DisplayFor(modelItem => Model.Sale.Customer.Name) - @Html.DisplayFor(modelItem => Model.Sale.Number)
                     </a>
                 </dd>
@@ -97,6 +77,7 @@
         {
             <button class="btn btn-warning btn-sm mb-3" id="addSaleInvoice" data-id="@Model.Id">Facturar Despacho</button>
         }
+
     </div>
 
 </div>

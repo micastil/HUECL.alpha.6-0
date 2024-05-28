@@ -30,8 +30,8 @@
     <thead>
         <tr>
             <th>Cliente</th>
-            <th>Orden de Compra</th>
             <th>Despacho</th>
+            <th>Orden de Compra</th>
             <th>Fecha</th>
             <th>Total</th>
             <th>Estado</th>
@@ -74,7 +74,12 @@
                     }
                 },
                 columns: [
-                    { data: 'customer' },
+                    { 
+                        data: 'customer' 
+                    },
+                    {
+                        data: 'number'
+                    },
                     { 
                         data: null,
                         render: function (data, type, row) 
@@ -82,9 +87,6 @@
                             return '<a href="/Sales/Details?Id=' + data.saleId + '">'+ data.saleNumber +'</a>';
                         }
                     }, 
-                    {
-                        data: 'number'
-                    },
                     {
                         data: 'date',
                         render: DataTable.render.date()

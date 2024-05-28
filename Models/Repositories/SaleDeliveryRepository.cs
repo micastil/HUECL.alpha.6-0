@@ -133,29 +133,14 @@ namespace HUECL.alpha._6_0.Models.Repositories
             }
         }
 
-        public async Task<bool> SaleDeliveryExists(int Id)
+        public async Task<SaleDeliveryItem?> GetSaleDeliveryItemById(int Id)
         {
-            try 
+            try
             {
-                return await _appDbContext.SaleDeliveries.AnyAsync(e => e.Id == Id && e.Active == Active.Active);
-            }
-            catch (DbException ex)
-            {
-                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
-                throw new SaleRepositoryCustomException(ex.Message, ex);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
-                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
-            }
-        }
-
-        public async Task<bool> SaleDeliveryItemExists(int Id)
-        {
-            try 
-            {
-                return await _appDbContext.SaleDeliveryItems.AnyAsync(e => e.Id == Id);
+                return await _appDbContext.SaleDeliveryItems.
+                    Where(t => t.Id == Id).
+                    Include(s => s.SaleDelivery).ThenInclude(r => r.Sale).ThenInclude(a => a.SaleItems).ThenInclude(b => b.Product).
+                    FirstOrDefaultAsync();
             }
             catch (DbException ex)
             {
@@ -280,6 +265,42 @@ namespace HUECL.alpha._6_0.Models.Repositories
                     .Include(s => s.SaleDelivery)
                     .Include(i => i.SaleItem)
                     .ToListAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
+        public async Task<bool> SaleDeliveryExists(int Id)
+        {
+            try
+            {
+                return await _appDbContext.SaleDeliveries.AnyAsync(e => e.Id == Id && e.Active == Active.Active);
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Db Exception: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Error: {mensaje}", ex.Message);
+                throw new SaleRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
+        public async Task<bool> SaleDeliveryItemExists(int Id)
+        {
+            try
+            {
+                return await _appDbContext.SaleDeliveryItems.AnyAsync(e => e.Id == Id);
             }
             catch (DbException ex)
             {
