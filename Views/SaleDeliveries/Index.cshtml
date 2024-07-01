@@ -99,9 +99,9 @@
                         data: 'state',
                         orderable: false,
                         render: function (data, type, row) {
-                            if (row.state == "Empty") { return "Sin Despachos"; }
-                            if (row.state == "WithItems") { return "Despacho Parcial"; }
-                            if (row.state == "WithInvoice") { return "Despacho Completo"; }
+                            if (row.state == "Empty") { return "Vacio"; }
+                            if (row.state == "WithItems") { return "Pendiente"; }
+                            if (row.state == "WithInvoice") { return "Facturado"; }
                         }
                     },
                     {
