@@ -36,7 +36,6 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [Display(Name = "Correo Actual")]
         public string Email { get; set; }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "Nuevo Correo")]
+            [Display(Name = "New email")]
             public string NewEmail { get; set; }
         }
 
@@ -93,7 +92,7 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"No es posible cargar el usuario con ID: '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -105,7 +104,7 @@ namespace HUECL.alpha._6_0.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"No es posible cargar el usuario con ID: '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)

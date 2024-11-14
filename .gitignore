@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /appsettings.json
+/Areas/Identity/Pages/Account/Manage/Email_6.0.cshtml
+/Areas/Identity/Pages/Account/Manage/Email_6.0.cshtml.cs
