@@ -124,12 +124,14 @@ app.MapControllerRoute(
 //    }
 //);
 
-app.UseEndpoints(
-    endpoints =>
-    {
-        endpoints.MapRazorPages();
-    }
-);
+app.MapRazorPages();
+
+//app.UseEndpoints(
+//    endpoints =>
+//    {
+//        endpoints.MapRazorPages();
+//    }
+//);
 
 DBSeed.SeedBase(app);
 DBSeed.SeedCategories(app);

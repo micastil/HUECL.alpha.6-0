@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HUECL.alpha._6_0.Models.Projects;
 
 namespace HUECL.alpha._6_0.Models
 {
@@ -33,6 +34,7 @@ namespace HUECL.alpha._6_0.Models
         public Country Country { get; set; } = null!;
 
         public ICollection<Sale>? Sales { get; set; }
+        public ICollection<Project> Projects { get; set; } = [];
 
     }
 }
