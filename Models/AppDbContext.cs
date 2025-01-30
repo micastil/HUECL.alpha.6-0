@@ -37,6 +37,7 @@ namespace HUECL.alpha._6_0.Models
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectStatus> ProjectStatuses { get; set; }
         public DbSet<Reminder> Reminders { get; set; }
+        public DbSet<ProjectSector> ProjectSectors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

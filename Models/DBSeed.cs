@@ -1,6 +1,7 @@
 ﻿using HUECL.alpha._6_0.Areas.Identity;
 using HUECL.alpha._6_0.Areas.Identity.Data;
 using HUECL.alpha._6_0.Areas.Identity.Pages;
+using HUECL.alpha._6_0.Models.Projects;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel;
 using System.Security.Claims;
@@ -122,10 +123,55 @@ namespace HUECL.alpha._6_0.Models
                 context.SaveChanges();
             }
 
+            if (!context.ProjectStatuses.Any()) 
+            {
+                context.ProjectStatuses.AddRange(
+                    new ProjectStatus { Name = "Conceptual Engineering", Active = true },
+                    new ProjectStatus { Name = "Basic Engineering", Active = true },
+                    new ProjectStatus { Name = "Detailed Engineering", Active = true },
+                    new ProjectStatus { Name = "Construction", Active = true },
+                    new ProjectStatus { Name = "Finished", Active = true }
+                    );
+                context.SaveChanges();
+            }
 
+            if(!context.ProjectSectors.Any()) 
+            {
+                context.ProjectSectors.AddRange(
+                    new ProjectSector { Name = "Mining", Active = true },
+                    new ProjectSector { Name = "Port", Active = true },
+                    new ProjectSector { Name = "Industry", Active = true },
+                    new ProjectSector { Name = "Energy", Active = true },
+                    new ProjectSector { Name = "Steel", Active = true },
+                    new ProjectSector { Name = "Pulp and Paper", Active = true },
+                    new ProjectSector { Name = "Cement", Active = true }
+                    );
+                context.SaveChanges();
+            }
 
+            if (!context.InteractionTypes.Any()) 
+            {
+                context.InteractionTypes.AddRange(
+                    new InteractionType { Name = "Meeting", Active = true },
+                    new InteractionType { Name = "Email", Active = true },
+                    new InteractionType { Name = "Call", Active = true },
+                    new InteractionType { Name = "WhatsApp", Active = true },
+                    new InteractionType { Name = "Technical Visit", Active = true },
+                    new InteractionType { Name = "Training Session", Active = true }
+                    );
+                context.SaveChanges();
+            }
 
-
+            if (context.ProjectDocumentTypes.Any()) 
+            {
+                context.ProjectDocumentTypes.AddRange(
+                    new ProjectDocumentType { Name = "Quotation", Active = true },
+                    new ProjectDocumentType { Name = "Invoice", Active = true },
+                    new ProjectDocumentType { Name = "Delivery", Active = true },
+                    new ProjectDocumentType { Name = "Technical Report", Active = true }
+                    );
+                context.SaveChanges();
+            }
         }
 
         public static async Task SeedSuperUser(IApplicationBuilder applicationBuilder, IConfiguration configurationApp)
