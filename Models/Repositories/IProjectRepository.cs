@@ -12,7 +12,8 @@ namespace HUECL.alpha._6_0.Models.Repositories
             string? searchValue,
             int sortColumnIndex,
             string? sortColumnName,
-            string? sortDirection);
+            string? sortDirection,
+            int selectedYear);
 
         Task<int> AddProject(Project project);
 

@@ -1,0 +1,125 @@
+﻿<a asp-action="Create" class="btn btn-success btn-sm mb-3" data-bs-toggle="tooltip" data-bs-title="Create New Project">
+    <i class="bi bi-plus-square"></i> New Project
+</a>
+
+<div class="col-sm-3">
+    <div class="form-floating mb-3">
+        <select class="form-control" id="yearFilter" name="yearFilter">
+            <option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+        </select>
+        <label class="form-label" for="yearFilter">Select Year</label>
+    </div>
+</div>
+
+
+<table id="projectsTable" class="table table-hover">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Project Name</th>
+            <th>Sector</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Currency</th>
+            <th>Last Update</th>
+            <th>Owner</th>
+            <th>JHG Id</th>
+            <th></th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            var currentYear = (new Date).getFullYear();
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            var selectedYear = localStorage.getItem('selectedYear');
+
+            if (selectedYear) {
+                $("#yearFilter").val(selectedYear)
+            }
+            else {
+                $("#yearFilter").val(currentYear)
+            }
+
+            var projectsDataTable = $('#projectsTable').DataTable({
+                language: {
+                    info: 'Page _PAGE_ de _PAGES_',
+                    infoEmpty: 'There is no info on the DB',
+                    infoFiltered: '(Filtered from _MAX_ total items)',
+                    lengthMenu: 'Visualize _MENU_ items per page',
+                    zeroRecords: 'There is no info on the DB',
+                    search: "Search:",
+                    paginate: {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    }
+                },
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '@Url.Action("GetProjects", "Projects")',
+                    type: 'POST',
+                    data: function (d) {
+                        d.currentYear = $("#yearFilter").val();
+                    }
+                },
+                columns: [
+                    { data: 'customer' },
+                    { data: 'name' },
+                    { data: 'sector' },
+                    { data: 'status' },
+                    {
+                        data: 'total',
+                        render: DataTable.render.number(null, null, 0, '$')
+                    },
+                    { data: 'currency' },
+                    {
+                        data: 'lastUpdate',
+                        render: DataTable.render.date()
+                    },
+                    { data: 'owner' },
+                    { data: 'jhgId' },
+
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<a data-bs-toggle="tooltip" data-bs-title="Project Detail" href="/Sales/Details?Id=' + data.id + '"><i class="bi-file-text" style="vertical-align: middle;"></i></a> | <a data-bs-toggle="tooltip" data-bs-title="Project Detail" href="/Sales/Deliveries?Id=' + data.id + '"><i class="bi bi-truck" style="vertical-align: middle;"></i></a>';
+                        }
+                    }
+                ],
+                order: [[1, 'desc']],
+                drawCallback: function () {
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+
+            $("#yearFilter").on('change', function () {
+                // localStorage.setItem('selectedYear', $(this).val());
+                // salesDataTable.ajax.reload();
+            });
+        });
+    </script>
+}

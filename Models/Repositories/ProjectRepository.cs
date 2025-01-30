@@ -46,7 +46,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
             }
         }
 
-        public async Task<DataTablesViewModel<ProjectViewModel>> GetDataTablesProject(string? draw, int skip, int pageSize, string? searchValue, int sortColumnIndex, string? sortColumnName, string? sortDirection)
+        public async Task<DataTablesViewModel<ProjectViewModel>> GetDataTablesProject(string? draw, int skip, int pageSize, string? searchValue, int sortColumnIndex, string? sortColumnName, string? sortDirection, int selectedYear)
         {
             try
             {
@@ -103,6 +103,7 @@ namespace HUECL.alpha._6_0.Models.Repositories
                     .Take(pageSize)
                     .Select(p => new ProjectViewModel
                     {
+                        Id = _customDataProtector.Protect(p.Id.ToString()),
                         Name = p.Name,
                         Customer = p.Customer != null ? p.Customer.Name : "No Customer",
                         Sector = p.ProjectSector != null ? p.ProjectSector.Name : "No Sector",
