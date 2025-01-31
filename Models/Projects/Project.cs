@@ -55,7 +55,6 @@ namespace HUECL.alpha._6_0.Models.Projects
         [Required]
         [Display(Name="Project Ownner")]
         public string OwnerId { get; set; } = string.Empty;
-        [Required]
         public ApplicationUser Owner { get; set; } = null!;
 
         [Required(ErrorMessage = "You must enter a Customer")]

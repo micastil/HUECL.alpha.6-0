@@ -1,0 +1,83 @@
+﻿@model HUECL.alpha._6_0.Models.Projects.Project
+
+@{
+    ViewData["Title"] = "Create New Project";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Create a New Project</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+        }
+
+        <form asp-action="Create" asp-controller="Projects">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="form-label"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerId"></select>
+                <label asp-for="CustomerId" class="form-label"></label>
+                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="ProjectStatusId" class="form-control" asp-items="ViewBag.ProjectStatusId"></select>
+                <label asp-for="ProjectStatusId" class="form-label"></label>
+                <span asp-validation-for="ProjectStatusId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="ProjectSectorId" class="form-control" asp-items="ViewBag.ProjectSectorId"></select>
+                <label asp-for="ProjectSectorId" class="form-label"></label>
+                <span asp-validation-for="ProjectSectorId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Total" class="form-control" />
+                <label asp-for="Total" class="form-label"></label>
+                <span asp-validation-for="Total" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select asp-for="CurrencyId" class="form-control" asp-items="ViewBag.CurrencyId"></select>
+                <label asp-for="CurrencyId" class="form-label"></label>
+                <span asp-validation-for="CurrencyId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Identifier" class="form-control" />
+                <label asp-for="Identifier" class="form-label"></label>
+                <span asp-validation-for="Identifier" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="submit" value="Create New Project" class="btn btn-success" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="Projects">Back to Project List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
