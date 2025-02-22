@@ -43,13 +43,13 @@
         <tr>
             <th>Customer</th>
             <th>Project Name</th>
-            <th>Sector</th>
+@*             <th>Sector</th> *@
             <th>Status</th>
             <th>Total</th>
             <th>Currency</th>
             <th>Last Update</th>
-            <th>Owner</th>
-            <th>JHG Id</th>
+@*             <th>Owner</th>
+            <th>JHG Id</th> *@
             <th></th>
         </tr>
     </thead>
@@ -72,7 +72,7 @@
             else {
                 $("#yearFilter").val(currentYear)
             }
-
+            
             var projectsDataTable = $('#projectsTable').DataTable({
                 language: {
                     info: 'Page _PAGE_ de _PAGES_',
@@ -101,7 +101,7 @@
                 columns: [
                     { data: 'customer' },
                     { data: 'name' },
-                    { data: 'sector' },
+                    // { data: 'sector' },
                     { data: 'status' },
                     {
                         data: 'total',
@@ -112,14 +112,14 @@
                         data: 'lastUpdate',
                         render: DataTable.render.date()
                     },
-                    { data: 'owner' },
-                    { data: 'jhgId' },
+                    // { data: 'owner' },
+                    // { data: 'jhgId' },
 
                     {
                         data: null,
                         orderable: false,
                         render: function (data, type, row) {
-                            return '<a data-bs-toggle="tooltip" data-bs-title="Project Detail" href="/Sales/Details?Id=' + data.id + '"><i class="bi-file-text" style="vertical-align: middle;"></i></a> | <a data-bs-toggle="tooltip" data-bs-title="Project Detail" href="/Sales/Deliveries?Id=' + data.id + '"><i class="bi bi-truck" style="vertical-align: middle;"></i></a>';
+                            return '<a data-bs-toggle="tooltip" data-bs-title="Project Detail" href="/Projects/Details?id=' + data.id + '"><i class="bi-file-text" style="vertical-align: middle;"></i></a>';
                         }
                     }
                 ],

@@ -1,0 +1,54 @@
+﻿@using HUECL.alpha._6_0.Models.Projects
+@using HUECL.alpha._6_0.Interfaces
+
+@model Interaction
+
+@inject ICustomDataProtector CustomDataProtector
+
+@{
+    var protectedId = CustomDataProtector.Protect(Model.ProjectId.ToString());
+}
+
+<div class="row">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        </div>
+    }
+
+    <form id="frmInteractionAdd" asp-controller="Projects" asp-action="AddInteraction">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-floating mb-3">
+            <select asp-for="InteractionTypeId" class="form-control" asp-items="ViewBag.InteractionType"></select>
+            <label asp-for="InteractionTypeId" class="form-label"></label>
+            <span asp-validation-for="InteractionTypeId" class="text-danger"></span>
+        </div>
+
+         <div class="form-floating mb-3">
+            <textarea asp-for="Description" class="form-control" style="height: 100px"></textarea>
+            <label asp-for="Description" class="form-label"></label>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" value="@Model.ProjectId" asp-for="ProjectId" />
+
+        <div class="form-floating mb-3">
+            <button type="button" class="btn btn-success" id="btnAddInteraction" data-proj=@protectedId>Add Interaction</button>
+            <button type="button" class="btn btn-danger" id="btnCancelInteraction" data-bs-dismiss="modal">Cancel</button>
+        </div>
+    </form>
+
+</div>
+
+<partial name="_ValidationScriptsPartial" />
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            
+        });
+    </script>
+}

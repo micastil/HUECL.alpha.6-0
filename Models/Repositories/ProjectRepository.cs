@@ -46,6 +46,25 @@ namespace HUECL.alpha._6_0.Models.Repositories
             }
         }
 
+        public async Task<int> AddProjectInteraction(Interaction interaction)
+        {
+            try 
+            {
+                _appDbContext.Interactions.Add(interaction);
+                return await _appDbContext.SaveChangesAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "AddProject Db Exception: {mensaje}", ex.Message);
+                throw new ProjectRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "AddProject Exception: {mensaje}", ex.Message);
+                throw new ProjectRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
         public async Task<DataTablesViewModel<ProjectViewModel>> GetDataTablesProject(string? draw, int skip, int pageSize, string? searchValue, int sortColumnIndex, string? sortColumnName, string? sortDirection, int selectedYear)
         {
             try
@@ -129,6 +148,60 @@ namespace HUECL.alpha._6_0.Models.Repositories
                 _logger.LogInformation(ex, "Project Exception: {mensaje}", ex.Message);
                 throw new ProjectRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
             }
+        }
+
+        public async Task<Project?> GetProjectById(int id)
+        {
+            try 
+            {
+                return await _appDbContext
+                    .Projects
+                    .Include(c => c.Customer)
+                    .Include(s => s.ProjectSector)
+                    .Include(r => r.ProjectStatus)
+                    .Include(i => i.Currency)
+                    .Include(j => j.Interactions).ThenInclude(t => t.InteractionType)
+                    .Include(u => u.Owner)
+                    .Where(i => i.Id == id && i.Active)
+                    .FirstOrDefaultAsync();
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "AddProject Db Exception: {mensaje}", ex.Message);
+                throw new ProjectRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "AddProject Exception: {mensaje}", ex.Message);
+                throw new ProjectRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }
+        }
+
+        public async Task<bool> UpdateStatus(int status, int projectId)
+        {
+            try 
+            {
+                Project? _project = await _appDbContext.Projects.Where(i => i.Id == projectId).FirstOrDefaultAsync();
+
+                if (_project == null) { return false; }
+
+                _project.ProjectStatusId = status;
+                _project.LastUpdate = DateTime.Now;
+
+                if (await _appDbContext.SaveChangesAsync() > 0) { return true; }
+
+                return false;
+            }
+            catch (DbException ex)
+            {
+                _logger.LogInformation(ex, "Project Db Exception: {mensaje}", ex.Message);
+                throw new ProjectRepositoryCustomException(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, "Project Exception: {mensaje}", ex.Message);
+                throw new ProjectRepositoryCustomException("Ha ocurrido un error en la aplicacion.", ex);
+            }   
         }
     }
 }

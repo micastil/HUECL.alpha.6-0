@@ -1,0 +1,49 @@
+﻿@using HUECL.alpha._6_0.Models.Projects
+@using HUECL.alpha._6_0.Interfaces
+@using System.Security.Claims
+
+@inject ICustomDataProtector CustomDataProtector
+
+@{
+    var protectedId = CustomDataProtector.Protect(Model.Id.ToString());
+}
+
+@model Project
+
+<div class="accordion" id="projectInteractions">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#interactions" aria-expanded="false" aria-controls="interactions">
+                <strong>Project Interactions</strong>
+            </button>
+        </h2>
+        <div id="interactions" class="accordion-collapse collapse">
+            <div class="accordion-body">
+
+                @if (Model.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                {
+                    <button id="btnModalAddInteraction" data-id=@protectedId type="button" class="btn btn-sm btn-primary mb-3" data-bs-toggle="tooltip" data-bs-title="Add Interaction">
+                        <i class="bi bi-plus-lg"></i> Add Interaction
+                    </button>
+                }
+
+                @if (Model.Interactions.Count() > 0)
+                {
+                    @foreach (var item in Model.Interactions.OrderByDescending(t => t.Date))
+                    {
+                        <div class="card mb-3">
+                            <h6 class="card-header">@item.InteractionType.Name - Created by: @item.CreatedByUser.UserName - On: @item.Date.ToString("dd-MM-yyyy | HH:mm")</h6>
+                            <div class="card-body">
+                                @item.Description
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <h5>There are no interactions for the project.</h5>
+                }
+            </div>
+        </div>
+    </div>
+</div>

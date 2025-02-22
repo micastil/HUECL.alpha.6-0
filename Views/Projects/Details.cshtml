@@ -1,0 +1,197 @@
+﻿@using System.Security.Claims
+@using HUECL.alpha._6_0.Interfaces
+@model HUECL.alpha._6_0.Models.Projects.Project
+
+@inject ICustomDataProtector CustomDataProtector
+
+@{
+    var protectedId = CustomDataProtector.Protect(Model.Id.ToString());
+}
+
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<partial name="_ProjectGeneralInformation" model="@Model" />
+
+<div class="accordion" id="projectInfo">
+
+    <div class="accordion-item mb-3">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <strong>Project Description</strong>
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse">
+            <div class="accordion-body">
+                @Model.Description
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="interactionsContainer">
+    <partial name="_ProjectInteractions" model="@Model" />
+</div>
+
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Success</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Dismiss</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalErrorMessageLabel">Error Message</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddInteraction" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalAddInteractionLabel">Add Interaction</h1>
+            </div>
+            <div class="modal-body" id="_containerAddInteraction">
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts
+{
+    <script>
+        //$(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Cargando ...</span>');
+
+        $(document).ready(function () {
+
+            $('#projectStatus').change(function () {
+                var projectId = $(this).data('project-id');
+                var newStatus = $(this).val();
+
+                var loadingIndicator = $('#loadingIndicator');
+                loadingIndicator.show();
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Projects/UpdateStatus',
+                    type: 'POST',
+                    data: { id: projectId, status: newStatus, __RequestVerificationToken: token },
+                    success: function (response) {
+                        loadingIndicator.hide();
+
+                        if (response.success) {
+                            $('#successMessage').text(response.message);
+                            $('#successModal').modal('show');
+                            $('#lastupdate').text(response.update)
+                        } else {
+                            $('#errorMessage').text(response.message);
+                            $('#errorModal').modal('show');
+                        }
+                    },
+                    error: function () {
+                        loadingIndicator.hide();
+                        $('#errorMessage').text('An unexpected error occurred.');
+                        $('#errorModal').modal('show');
+                    }
+                });
+            });
+        });
+
+        $(document).on('click', '#btnModalAddInteraction', function () {
+            var _data = $(this).data('id');
+
+            $.ajax({
+                url: '/Projects/AddInteraction',
+                type: 'GET',
+                data: { Id: _data },
+                success: function (data) {
+                    $("#_containerAddInteraction").html(data.partialView);
+                    $("#modalAddInteraction").modal('show');
+
+                    $('#modalAddInteraction').on('shown.bs.modal', function () {
+
+                    });
+                },
+                error: function () {
+                    console.log('ha ocurrido un error en la aplicacion');
+                }
+            });
+        });
+
+        $(document).on('click', '#btnAddInteraction', function (e) {
+
+            e.preventDefault();
+
+            if ($('#frmInteractionAdd').valid()) {
+                $(this).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Adding Interaction ...</span>');
+
+                var Id = $(this).data('proj');
+
+                var interaction = {
+                    InteractionTypeId: $("#InteractionTypeId").val(),
+                    Description: $("#Description").val()
+                };
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax
+                    ({
+                        url: '/Projects/AddInteraction?Id=' + encodeURIComponent(Id),
+                        type: 'POST',
+                        contentType: "application/json",
+                        data: JSON.stringify(interaction),
+                        headers: {
+                            "RequestVerificationToken": token
+                        },
+                        success: function (data) {
+
+                            var partialView = data.partialView;
+
+                            $("#modalAddInteraction").modal('hide');
+
+                            $('#interactionsContainer').html(partialView);
+                        },
+                        error: function (xhr, status, error) {
+
+                        },
+                        complete: function () {
+
+                        }
+                    });
+
+            }
+        });
+
+        $(document).on('click', '#btnCancelInteraction', function () {
+
+        });
+    </script>
+}

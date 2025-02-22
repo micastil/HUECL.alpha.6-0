@@ -60,22 +60,22 @@ namespace HUECL.alpha._6_0.Models.Projects
         [Required(ErrorMessage = "You must enter a Customer")]
         [Display(Name = "Customer")]
         public int CustomerId { get; set; }
-        public Customer? Customer { get; set; }
+        public Customer Customer { get; set; } = null!;
 
         [Required(ErrorMessage = "You must enter a Project State")]
         [Display(Name = "Project State")]
         public int ProjectStatusId { get; set; }
-        public ProjectStatus? ProjectStatus { get; set; }
+        public ProjectStatus ProjectStatus { get; set; } = null!;
 
         [Required(ErrorMessage = "You must enter a Project Sector")]
         [Display(Name = "Project Sector")]
         public int ProjectSectorId { get; set; }
-        public ProjectSector? ProjectSector { get; set; }
+        public ProjectSector ProjectSector { get; set; } = null!;
 
         [Required(ErrorMessage = "You must enter a Project Currency")]
         [Display(Name = "Currency")]
         public int CurrencyId { get; set; }
-        public Currency? Currency { get; set; }
+        public Currency Currency { get; set; } = null!;
 
 
         public ICollection<Interaction> Interactions { get; set; } = [];

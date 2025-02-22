@@ -17,5 +17,10 @@ namespace HUECL.alpha._6_0.Models.Repositories
 
         Task<int> AddProject(Project project);
 
+        Task<Project?> GetProjectById(int id);
+
+        Task<bool> UpdateStatus(int status, int projectId);
+
+        Task<int> AddProjectInteraction(Interaction interaction);
     }
 }

@@ -1,0 +1,79 @@
+﻿@using System.Security.Claims
+@using HUECL.alpha._6_0.Interfaces
+
+@model HUECL.alpha._6_0.Models.Projects.Project
+@inject ICustomDataProtector CustomDataProtector
+
+<div class="card mb-3">
+
+    <h5 class="card-header text-bg-secondary">Project General Information</h5>
+
+    <div class="card-body">
+        <form id="updateProject" asp-controller="Projects" asp-action="UpdateStatus">
+
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td><strong>Customer:</strong></td>
+                        <td>@Model.Customer.Name</td>
+                        <td><strong>Last Update:</strong></td>
+                        <td id="lastupdate">@Model.LastUpdate.ToString("dd-MM-yyyy | HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Project Name:</strong></td>
+                        <td colspan="3">@Model.Name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        @if (Model.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                        {
+                            <td>
+                                @{
+                                    var protectedId = CustomDataProtector.Protect(Model.Id.ToString());
+                                }
+                                <select id="projectStatus" class="form-select" data-project-id="@protectedId">
+                                    @foreach (var status in ViewBag.ProjectStatusId)
+                                    {
+                                        if (status.Value == Model.ProjectStatus.Id.ToString())
+                                        {
+                                            <option value="@status.Value" selected>@status.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@status.Value">@status.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <div id="loadingIndicator" style="display: none;" class="mt-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@Model.ProjectStatus.Name</td>
+                        }
+                        
+                        
+                        <td><strong>Sector:</strong></td>
+                        <td>@Model.ProjectSector.Name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total:</strong></td>
+                        <td>@Model.Total</td>
+                        <td><strong>Currency:</strong></td>
+                        <td>@Model.Currency.Name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Owner:</strong></td>
+                        <td colspan="3">@Model.Owner.Name (@Model.Owner.UserName)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </form>
+    </div>
+
+</div>

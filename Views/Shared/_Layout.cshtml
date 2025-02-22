@@ -48,6 +48,9 @@
                                 <li><a class="dropdown-item" asp-controller="SaleInvoices" asp-action="Index">Facturas</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Projects" asp-action="Index">Projects</a>
+                        </li>
                         @if (isSuperUser.Succeeded)
                         {
                             <li class="nav-item dropdown">
@@ -73,11 +76,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            2023 - HUECL
+            HUECL
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/appScript.js" asp-append-version="true"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
